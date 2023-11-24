@@ -31,9 +31,11 @@ link_directories(
 
 include_directories(
 	${INCLUDE_DIR}
+	${INCLUDE_DIR}/test
 	${INCLUDE_DIR}/Core
 	${INCLUDE_DIR}/Video
 	${INCLUDE_DIR}/Graphics
+	${INCLUDE_DIR}/Plan
 	${INCLUDE_DIR}/Ui
 	${INCLUDE_DIR}/Node
 	${GLFW_INC}
@@ -54,6 +56,7 @@ file(GLOB_RECURSE SRC_FILES
     "${SOURCE_DIR}/*.c*"
     "${SOURCE_DIR}/Core/*.c*"
     "${INCLUDE_DIR}/Graphics/*.c*"
+    "${INCLUDE_DIR}/Plan/*.c*"
     "${SOURCE_DIR}/Ui/*.c*"
     "${SOURCE_DIR}/Video/*.c*"
     "${SOURCE_DIR}/Node/*.c*"
@@ -67,8 +70,10 @@ file(GLOB_RECURSE SRC_FILES
 
 file (GLOB_RECURSE INC_FILES
     "${INCLUDE_DIR}/*.h"
+    "${SOURCE_DIR}/test/*.h"
     "${INCLUDE_DIR}/Core/*.h"
     "${INCLUDE_DIR}/Graphics/*.h"
+    "${INCLUDE_DIR}/Plan/*.h"
     "${INCLUDE_DIR}/Ui/*.h"
     "${INCLUDE_DIR}/Video/*.h"
     "${INCLUDE_DIR}/Node/*.h"
@@ -104,3 +109,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
 
 #===================== LINKING LIBRARIES =======================#
 target_link_libraries(${PROJECT_NAME} ${EXTRA_LIBS} swscale avformat avdevice  avcodec avutil )
+
+file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${CMAKE_BINARY_DIR})
