@@ -31,6 +31,7 @@ link_directories(
 
 include_directories(
 	${INCLUDE_DIR}
+	${INCLUDE_DIR}/Core
 	${INCLUDE_DIR}/Video
 	${INCLUDE_DIR}/Graphics
 	${INCLUDE_DIR}/Ui
@@ -51,6 +52,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 file(GLOB_RECURSE SRC_FILES
     "${SOURCE_DIR}/*.c*"
+    "${SOURCE_DIR}/Core/*.c*"
     "${INCLUDE_DIR}/Graphics/*.c*"
     "${SOURCE_DIR}/Ui/*.c*"
     "${SOURCE_DIR}/Video/*.c*"
@@ -65,6 +67,7 @@ file(GLOB_RECURSE SRC_FILES
 
 file (GLOB_RECURSE INC_FILES
     "${INCLUDE_DIR}/*.h"
+    "${INCLUDE_DIR}/Core/*.h"
     "${INCLUDE_DIR}/Graphics/*.h"
     "${INCLUDE_DIR}/Ui/*.h"
     "${INCLUDE_DIR}/Video/*.h"
