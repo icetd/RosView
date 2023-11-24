@@ -128,8 +128,8 @@ void NodeLayer::Show_Node_Layout(bool *p_open)
         }
 
         {
-            ImGui::Begin("Info");
-            OnRenderInfo();
+            ImGui::Begin("Nav");
+            OnRenderNav();
             ImGui::End();
         }
     }
@@ -185,7 +185,7 @@ void NodeLayer::OnRenderView()
     ImGui::EndChild();
 }
 
-void NodeLayer::OnRenderInfo()
+void NodeLayer::OnRenderNav()
 {
     ImGui::NewLine(); 
     ImGui::Text(u8"当前位置:"); ImGui::SameLine(0, 20);

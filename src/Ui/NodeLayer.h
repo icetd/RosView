@@ -31,7 +31,7 @@ private:
     float m_robotAngle;
 
     void OnRenderView();
-    void OnRenderInfo();
+    void OnRenderNav();
 };
 
 #endif
