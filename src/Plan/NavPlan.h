@@ -22,6 +22,10 @@ public:
 
     int GetCurrentGoalId() { return m_cur_goal_id; }
     int GetGoalNum() { return m_goal_num; }
+    
+    std::map <int, manager_msgs::Plan> GetGoalList() { return m_GoalList; }
+
+    void SetName(std::string &name) { m_plan_name = name; }
     std::string GetName() { return m_plan_name; }
 
 private:

@@ -12,11 +12,11 @@ NavPlan::~NavPlan()
 {
 }
 
-int NavPlan::Addgoal(const manager_msgs::Plan &plan)
+int NavPlan::Addgoal(const manager_msgs::Plan &goal)
 {   
     m_cur_goal_id++;
     m_goal_num = m_cur_goal_id;
-    m_GoalList.insert(std::make_pair(m_cur_goal_id, plan));
+    m_GoalList.insert(std::make_pair(m_cur_goal_id, goal));
     return 1;
 }
 
@@ -57,7 +57,7 @@ int NavPlan::pushPlan()
     for(auto iter = m_GoalList.begin(); iter != m_GoalList.end(); ++iter) {
         sprintf(temp, "insert into %s(id, goal_id, goal_type, action_id, px, py, oz, ow) values('%d', '%d', '%d', %d, '%f', '%f', '%f', '%f')",
                        m_plan_name.c_str(),
-                       iter->first, iter->first, iter->second.type.status, iter->second.action_id,
+                       iter->first, iter->second.id, iter->second.type.status, iter->second.action_id,
                        iter->second.pose.position.x, iter->second.pose.position.y,
                        iter->second.pose.orientation.z, iter->second.pose.orientation.w);
         sql = temp;

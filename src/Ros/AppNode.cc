@@ -34,6 +34,12 @@ void map_meta_callback(const nav_msgs::MapMetaData &mapMeta)
     appNode->OnMapMetaCallback(mapMeta);
 }
 
+void plan_callback(const std_msgs::String &str)
+{
+    AppNode *appNode = AppNode::GetInstance();
+    appNode->OnPlanCallback(str);
+}
+
 void AppNode::setOnAmclPoseCallback(std::function<void (const geometry_msgs::PoseWithCovarianceStamped & pose)> callback)
 {
     OnAmclPoseCallback = std::move(callback);
@@ -42,6 +48,11 @@ void AppNode::setOnAmclPoseCallback(std::function<void (const geometry_msgs::Pos
 void AppNode::setOnMapMetaCallback(std::function<void (const nav_msgs::MapMetaData &mapMeta)> callback)
 {
     OnMapMetaCallback = std::move(callback);   
+}
+
+void AppNode::setOnPlanCallback(std::function<void (const std_msgs::String &str)> callback)
+{
+    OnPlanCallback = std::move(callback);
 }
 
 bool AppNode::init(char *master_url)
@@ -60,7 +71,15 @@ bool AppNode::init(char *master_url)
 
         m_map_metaData_sub = new ros::Subscriber<nav_msgs::MapMetaData> ("/map_metadata", &map_meta_callback);
         nh.subscribe(*m_map_metaData_sub);
+        
+        m_cmd_plan_pub = new ros::Publisher("/manager/cmd_plan", &cmd_plan_msg);
+        nh.advertise(*m_cmd_plan_pub);
 
+        m_plan_pub = new ros::Publisher("/manager/plan", &plan_msg);
+        nh.advertise(*m_plan_pub);
+
+        m_back_plan_sub = new ros::Subscriber<std_msgs::String> ("/manager/back", &plan_callback);
+        nh.subscribe(*m_back_plan_sub);
     }
     return true;
 }
@@ -96,6 +115,24 @@ void AppNode::move(char key, float speed_linear, float speed_angular)
     twist_msg.angular.z = direction_yaw * speed_angular;
 
     m_cmd_vel_pub->publish(&twist_msg);
+    nh.spinOnce(); 
+}
+
+void AppNode::pubPlan(manager_msgs::Plan &plan_goal)
+{
+    plan_msg = plan_goal;
+    m_plan_pub->publish(&plan_msg);
+
+    Sleep(100);
+    nh.spinOnce(); 
+}
+
+void AppNode::pubCmdPlan(manager_msgs::Status &plan_cmd)
+{
+    cmd_plan_msg = plan_cmd;
+    m_cmd_plan_pub->publish(&cmd_plan_msg);
+
+    Sleep(100);
     nh.spinOnce(); 
 }
 

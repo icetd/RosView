@@ -14,7 +14,9 @@ public:
     int DeletePlan(int plan_id);
     int ClearPlan();
 
-    int GetCurrentId() { return m_cur_plan_id; }
+    int GetCurrentPlanId() { return m_cur_plan_id; }
+    int GetPlanNum() { return m_plan_num; }
+    std::map <int, NavPlan> &GetPlanList() { return m_planList; }
 
     int pushPlans();
     int pushClearAll();

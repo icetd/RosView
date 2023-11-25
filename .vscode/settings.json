@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "plan.h": "c"
+        "plan.h": "c",
+        "xtree": "cpp"
     }
 }

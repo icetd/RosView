@@ -25,8 +25,11 @@ int PlanManager::AddPlan(NavPlan &plan)
 
 int PlanManager::DeletePlan(int plan_id)
 {
-    if (plan_id <= m_plan_num)
+    if (plan_id <= m_plan_num) {
         m_planList.erase(plan_id);
+        m_cur_plan_id--;
+        m_plan_num = m_cur_plan_id;
+    }
     return 1;
 }
 
@@ -52,7 +55,7 @@ int PlanManager::pushClearAll()
             sprintf(temp, "DROP TABLE main.%s",iter->second.GetName().c_str());
             sql = temp;
             re = m_plans.DeleteTable(sql);
-            iter->second.Clear();
+            //iter->second.Clear();
 
             sprintf(temp, "delete from nav_plans where plan_name='%s'", iter->second.GetName().c_str());
             sql = temp;
@@ -60,7 +63,7 @@ int PlanManager::pushClearAll()
         }
     }
 
-    ClearPlan();
+    //ClearPlan();
     return 1;
 }
 
@@ -91,8 +94,6 @@ int PlanManager::pushPlans()
 
 int PlanManager::pullPlans()
 {
- 
-
     std::string sql;
     char temp[256];
     std::vector<std::string> arrKey;
@@ -125,7 +126,7 @@ int PlanManager::pullPlans()
                     int goal_num = arrValue.size();
                     for (int i = 0; i < goal_num; ++i) {
                         manager_msgs::Plan goal;
-                        int goal_id = atoi(arrValue[i][1].c_str());
+                        goal.id= atoi(arrValue[i][1].c_str());
                         goal.type.status = atoi(arrValue[i][2].c_str());
                         goal.action_id = atoi(arrValue[i][3].c_str());
                         goal.pose.position.x = atof(arrValue[i][4].c_str());
@@ -137,6 +138,7 @@ int PlanManager::pullPlans()
                     }
                 } else {
                     LOG(WARN, "query data failed. Please Clear && Initizlize the database.");
+                    return 0;
                 }
             }
         } else {

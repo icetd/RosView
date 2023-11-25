@@ -9,6 +9,9 @@
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/MapMetaData.h>
+#include <manager_msgs/Plan.h>
+#include <manager_msgs/Status.h>
+#include <std_msgs/String.h>
 #include <functional>
 
 #include "MThread.h"
@@ -22,7 +25,10 @@ public:
     static AppNode *GetInstance();
     bool init(char *master_url);
     bool destroy();
+
     void move(char key, float speed_linear, float speed_angular);
+    void pubPlan(manager_msgs::Plan &plan_goal);
+    void pubCmdPlan(manager_msgs::Status &plan_cmd);
 
     void setClient(bool is_client) { isClient = is_client; }
     bool getClient() { return isClient; }
@@ -32,6 +38,9 @@ public:
 
     std::function<void (const nav_msgs::MapMetaData &)> OnMapMetaCallback;
     void setOnMapMetaCallback(std::function<void (const nav_msgs::MapMetaData &mapMeta)> callback);
+
+    std::function<void (const std_msgs::String &)> OnPlanCallback;
+    void setOnPlanCallback(std::function<void (const std_msgs::String &str)> callback);
     
 protected:
     AppNode();
@@ -45,10 +54,18 @@ private:
     std::string url;
  
     geometry_msgs::Twist twist_msg;
-
     ros::Publisher *m_cmd_vel_pub;
+    
     ros::Subscriber<geometry_msgs::PoseWithCovarianceStamped> *m_amcl_pose_sub;
     ros::Subscriber<nav_msgs::MapMetaData> *m_map_metaData_sub;
+
+    manager_msgs::Status cmd_plan_msg;
+    ros::Publisher *m_cmd_plan_pub;
+    
+    manager_msgs::Plan plan_msg;
+    ros::Publisher *m_plan_pub;
+    
+    ros::Subscriber<std_msgs::String> *m_back_plan_sub;
 
     bool isClient;
 };
