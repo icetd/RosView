@@ -37,7 +37,7 @@ include_directories(
 	${INCLUDE_DIR}/Graphics
 	${INCLUDE_DIR}/Plan
 	${INCLUDE_DIR}/Ui
-	${INCLUDE_DIR}/Node
+	${INCLUDE_DIR}/Ros
 	${GLFW_INC}
 	${GLAD_INC}
 	${STB_IMAGE_INC}
@@ -59,7 +59,7 @@ file(GLOB_RECURSE SRC_FILES
     "${INCLUDE_DIR}/Plan/*.c*"
     "${SOURCE_DIR}/Ui/*.c*"
     "${SOURCE_DIR}/Video/*.c*"
-    "${SOURCE_DIR}/Node/*.c*"
+    "${SOURCE_DIR}/Ros/*.c*"
 	"${GLAD_SRC}/*c*"
 	"${IMGUI_SRC}/*.c*"
 	"${FILEDIALOGS_SRC}/*c*"
@@ -76,7 +76,7 @@ file (GLOB_RECURSE INC_FILES
     "${INCLUDE_DIR}/Plan/*.h"
     "${INCLUDE_DIR}/Ui/*.h"
     "${INCLUDE_DIR}/Video/*.h"
-    "${INCLUDE_DIR}/Node/*.h"
+    "${INCLUDE_DIR}/Ros/*.h"
 	"${IMGUI_SRC}/*.h"
 	"${GLAD_INC}/*h"
 	"${FILEDIALOGS_SRC}/*h"

@@ -47,7 +47,8 @@ int NavPlan::pushPlan()
     if (re != SQLITE_OK)
         return 0;
      
-    sprintf(temp, "create table %s(id integer primary key autoincrement,goal_id integer,goal_type integer,action_id intefer, px REAL,py REAL,oz REAL,ow REAL)", m_plan_name.c_str());
+    sprintf(temp, "create table %s(id integer primary key autoincrement,goal_id integer,goal_type integer,action_id intefer, px REAL,py REAL,oz REAL,ow REAL)", 
+                                    m_plan_name.c_str());
     sql = temp;
     m_plan.CreateTable(sql);
     if (re != SQLITE_OK)
