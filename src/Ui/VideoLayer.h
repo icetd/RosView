@@ -19,7 +19,7 @@ private:
 
     std::unique_ptr<VideoThread> m_VideoThread1;
     std::unique_ptr<Texture> m_Texture1;
-    char m_url1[128] = "rtsp://192.168.2.128:8554/unicast";
+    char m_url1[128] = "rtsp://192.168.2.109:8554/unicast";
     std::vector<std::vector<uint8_t>> m_dataBufferList1;
     std::vector<uint8_t> m_dataBuffer1;
     std::mutex mutex_data1;
@@ -28,12 +28,21 @@ private:
 
     std::unique_ptr<VideoThread> m_VideoThread2;
     std::unique_ptr<Texture> m_Texture2;
-    char m_url2[128] = "rtsp://192.168.2.128:8554/unicast";
+    char m_url2[128] = "rtsp://192.168.2.109:8554/unicast";
     std::vector<std::vector<uint8_t>> m_dataBufferList2;
     std::vector<uint8_t> m_dataBuffer2;
     std::mutex mutex_data2;
     void OnRenderData2(std::vector<uint8_t> &&data);
     void OnRenderVideo2();
+ 
+    std::unique_ptr<VideoThread> m_VideoThread3;
+    std::unique_ptr<Texture> m_Texture3;
+    char m_url3[128] = "rtsp://192.168.2.109:8554/unicast";
+    std::vector<std::vector<uint8_t>> m_dataBufferList3;
+    std::vector<uint8_t> m_dataBuffer3;
+    std::mutex mutex_data3;
+    void OnRenderData3(std::vector<uint8_t> &&data);
+    void OnRenderVideo3();
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "imgui.h"
 #include "Utils.h"
+#include "TransForm.h"
 
 extern bool show_video_layout;
 
@@ -18,6 +19,12 @@ void VideoLayer::OnAttach()
 	m_VideoThread2->SetOnRenderDataCallback(std::bind(&VideoLayer::OnRenderData2, this, std::placeholders::_1));
 	m_VideoThread2->start();
 	m_dataBufferList2.clear();
+	
+	m_Texture3 = std::make_unique<Texture>();
+	m_VideoThread3 = std::make_unique<VideoThread>();
+	m_VideoThread3->SetOnRenderDataCallback(std::bind(&VideoLayer::OnRenderData3, this, std::placeholders::_1));
+	m_VideoThread3->start();
+	m_dataBufferList3.clear();
 }
 
 void VideoLayer::OnUpdate(float ts)
@@ -50,7 +57,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		if (m_VideoThread1->GetCaptureStatus()) {
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
 		} else {
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 0.0f), "Stop");
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Stop");
 		}
 		m_VideoThread1->SetStartStatus((int)radio_video1);
 
@@ -68,6 +75,21 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Stop");
 		}
 		m_VideoThread2->SetStartStatus((int)radio_video2);
+		
+		ImGui::NewLine();
+		ImGui::InputTextWithHint("video3", "set rtsp url here", m_url3, IM_ARRAYSIZE(m_url3));
+		m_VideoThread3->SetUrl(m_url3);
+
+		static int radio_video3 = 0;
+		ImGui::RadioButton(u8"打开 video3", &radio_video3, 1); ImGui::SameLine(0, 0);
+		ImGui::RadioButton(u8"关闭 video3", &radio_video3, 0); ImGui::SameLine(0, 20);
+	
+		if (m_VideoThread3->GetCaptureStatus()) {
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
+		} else {
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Stop");
+		}
+		m_VideoThread3->SetStartStatus((int)radio_video3);
 
 		ImGui::Separator();
 		ImGui::NewLine();
@@ -85,6 +107,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 			m_dataBufferList1.pop_back();
 			m_Texture1->bind(m_VideoThread1->GetWidth(), m_VideoThread1->GetHeight(), m_dataBuffer1.data());
 			mutex_data1.unlock();
+		} else {
 		}
 		OnRenderVideo1();
 		ImGui::End();
@@ -98,8 +121,23 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 			m_dataBufferList2.pop_back();
 			m_Texture2->bind(m_VideoThread2->GetWidth(), m_VideoThread2->GetHeight(), m_dataBuffer2.data());
 			mutex_data2.unlock();
+		} else {
 		}
 		OnRenderVideo2();
+		ImGui::End();
+	}
+	{
+		ImGui::Begin("Video3");
+		if (!m_dataBufferList3.empty())
+		{
+			mutex_data3.lock();
+			m_dataBuffer3 = m_dataBufferList3.back();
+			m_dataBufferList3.pop_back();
+			m_Texture3->bind(m_VideoThread3->GetWidth(), m_VideoThread3->GetHeight(), m_dataBuffer3.data());
+			mutex_data3.unlock();
+		} else {
+		}
+		OnRenderVideo3();
 		ImGui::End();
 	}
 }
@@ -126,10 +164,8 @@ void VideoLayer::OnRenderVideo1()
 {
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 	if (m_VideoThread1->GetCaptureStatus()) {
-		ImGui::Image((ImTextureID)(intptr_t)m_Texture1->getId(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(1, 0), ImVec2(0, 1));
+		ImGui::Image((ImTextureID)(intptr_t)m_Texture1->getId(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, 1));
 	} else {
-		glClearColor(1.0, 0.0, 0.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
 	}
 }
 
@@ -148,7 +184,28 @@ void VideoLayer::OnRenderVideo2()
 {
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 	if (m_VideoThread2->GetCaptureStatus()) {
-		ImGui::Image((ImTextureID)(intptr_t)m_Texture2->getId(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(1, 0), ImVec2(0, 1));
+		ImGui::Image((ImTextureID)(intptr_t)m_Texture2->getId(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, 1));
+	}else {
+	}
+}
+
+void VideoLayer::OnRenderData3(std::vector<uint8_t>&& data)
+{
+	mutex_data3.lock();
+	m_dataBufferList3.emplace_back(std::move(data));
+	mutex_data3.unlock();
+
+	if (m_dataBufferList3.size() > 3)
+		m_dataBufferList3.pop_back();
+}
+
+
+
+void VideoLayer::OnRenderVideo3()
+{
+	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+	if (m_VideoThread3->GetCaptureStatus()) {
+		ImGui::Image((ImTextureID)(intptr_t)m_Texture3->getId(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, 1));
 	}else {
 	}
 }

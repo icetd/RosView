@@ -80,6 +80,19 @@ void NodeLayer::Show_Node_Layout(bool *p_open)
             ImGui::End();
         }
 
+        // add maker plan view
+        {
+            if (!(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize))
+                ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetFontSize() * 12.0f), ImGuiCond_FirstUseEver);
+
+            ImGui::Begin(u8"路线制作");
+            ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
+            ImGui::AlignTextToFramePadding();
+            
+            OnRenderMake();
+            
+            ImGui::End();
+        }
 
         // add nav plan view
         {
@@ -93,20 +106,6 @@ void NodeLayer::Show_Node_Layout(bool *p_open)
             OnRenderNav();
             
             ImGui::PopItemWidth();
-            ImGui::End();
-        }
-
-        // add maker plan view
-        {
-            if (!(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize))
-                ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetFontSize() * 12.0f), ImGuiCond_FirstUseEver);
-
-            ImGui::Begin(u8"路线制作");
-            ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
-            ImGui::AlignTextToFramePadding();
-            
-            OnRenderMake();
-            
             ImGui::End();
         }
     }
@@ -256,8 +255,8 @@ void NodeLayer::NavShowPlan()
         }
         ImGui::EndListBox();
     }
-
-    if(ImGui::Button(u8"发布路线") && m_PlanManager->GetCurrentPlanId() > 0) {
+    ImGui::NewLine();
+    if(ImGui::Button(u8"发布路线", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
         manager_msgs::Status status;
         status.status = status.DELETEALL;
         m_AppNode->pubCmdPlan(status);
@@ -268,28 +267,26 @@ void NodeLayer::NavShowPlan()
         }
     }
 
-    if(ImGui::Button(u8"开始执行") && m_PlanManager->GetCurrentPlanId() > 0) {
+    ImGui::SameLine(0, 10);
+    if(ImGui::Button(u8"开始执行", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
         manager_msgs::Status status;
         status.status = status.START;
         m_AppNode->pubCmdPlan(status);
     }
 
-    ImGui::SameLine(0, 20);
-    if(ImGui::Button(u8"暂停导航") && m_PlanManager->GetCurrentPlanId() > 0) {
+    if(ImGui::Button(u8"暂停导航", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
         manager_msgs::Status status;
         status.status = status.CANCEL;
         m_AppNode->pubCmdPlan(status);
     }
 
-    ImGui::SameLine(0, 20);
-    if(ImGui::Button(u8"继续导航") && m_PlanManager->GetCurrentPlanId() > 0) {
+    ImGui::SameLine(0, 10);
+    if(ImGui::Button(u8"继续导航", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
         manager_msgs::Status status;
         status.status = status.CONTINUE;
         m_AppNode->pubCmdPlan(status);
     }
 
-
-    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_plan_back_msg.c_str());
     HelpMarker(u8"选择路线后，点击执行即可");
 }
 
@@ -301,8 +298,10 @@ void NodeLayer::NavMessage()
     ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "X: %.4fm", m_realrobotPos.x); ImGui::SameLine(0, 20);
     ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Y: %.4fm", m_realrobotPos.y); ImGui::SameLine(0, 20);
     ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Yaw: %.4f", m_robotAngle);
-}
 
+    ImGui::Text(u8"执行消息"); ImGui::SameLine(0, 20);
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_plan_back_msg.c_str());
+}
 
 void NodeLayer::OnRenderMake()
 {
@@ -383,7 +382,7 @@ void NodeLayer::MakePlan()
 
 
     std::string plan_name = temp;
-    if(ImGui::Button(u8"添加goal")) {
+    if(ImGui::Button(u8"添加goal", ImVec2(110, 30))) {
         manager_msgs::Plan goal;
         goal.pose.position.x = m_pose.pose.pose.position.x;
         goal.pose.position.y = m_pose.pose.pose.position.y;
@@ -399,15 +398,15 @@ void NodeLayer::MakePlan()
     ImGui::SameLine(0, 20);
     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "goal_%d", m_make_goal_num);
  
-    ImGui::SameLine(0, 20);
-    if(ImGui::Button(u8"删除goal") && m_make_goal_num > 1) {
+    if(ImGui::Button(u8"删除goal", ImVec2(110, 30)) && m_make_goal_num > 1) {
         m_make_goal_num--;
         m_make_plan->Deletegoal(m_make_goal_num);
     }
     ImGui::SameLine(0, 20);
     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "goal_%d", m_make_goal_num-1);
 
-    if(ImGui::Button(u8"添加Plan") && m_make_goal_num > 1) {
+    ImGui::NewLine();
+    if(ImGui::Button(u8"添加Plan", ImVec2(110, 30)) && m_make_goal_num > 1) {
         m_make_plan->SetName(plan_name);
         m_PlanManager->AddPlan(*m_make_plan);
         m_make_plan->Clear();
@@ -417,8 +416,7 @@ void NodeLayer::MakePlan()
     ImGui::SameLine(0, 20);
     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "plan_%d", m_make_plan_num);
     
-    ImGui::SameLine(0, 20);
-    if(ImGui::Button(u8"删除Plan") && m_make_plan_num > 1) {
+    if(ImGui::Button(u8"删除Plan", ImVec2(110, 30)) && m_make_plan_num > 1) {
         m_make_plan_num--;
         m_PlanManager->DeletePlan(m_make_plan_num);
         m_make_plan->Clear();
@@ -428,12 +426,12 @@ void NodeLayer::MakePlan()
     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "plan_%d", m_make_plan_num-1);
 
     ImGui::NewLine();
-    if(ImGui::Button(u8"提交路线到数据库") && m_make_plan_num > 1) {
+    if(ImGui::Button(u8"提交路线到数据库", ImVec2(110, 30)) && m_make_plan_num > 1) {
         m_PlanManager->pushPlans();
     }
 
-    ImGui::SameLine(100, 30);
-    if(ImGui::Button(u8"从数据库更新路线")) {
+    ImGui::SameLine(0, 20);
+    if(ImGui::Button(u8"从数据库更新路线", ImVec2(110, 30))) {
         int ret = 0;
         m_make_plan->Clear();
         m_make_plan_num = 1;
@@ -442,19 +440,20 @@ void NodeLayer::MakePlan()
         ret = m_PlanManager->pullPlans();
     }
 
-    if(ImGui::Button(u8"清空本地路线")) {
+    if(ImGui::Button(u8"清空本地路线", ImVec2(110, 30))) {
         m_make_plan->Clear();
         m_make_plan_num = 1;
         m_make_goal_num = 1;
         m_PlanManager->ClearPlan();
     }
 
-    ImGui::SameLine(100, 30);
-    if(ImGui::Button(u8"清空数据库")) {
+    ImGui::SameLine(0, 20);
+    if(ImGui::Button(u8"清空数据库", ImVec2(110, 30))) {
         m_PlanManager->pushClearAll();
     }
 
-    if(ImGui::Button(u8"保存地图") && m_PlanManager->GetCurrentPlanId() > 0) {
+    ImGui::NewLine();
+    if(ImGui::Button(u8"保存地图", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
         manager_msgs::Status status;
         status.status = status.MAPSAVE;
         m_AppNode->pubCmdPlan(status);
