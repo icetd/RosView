@@ -50,7 +50,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 
 		ImGui::InputTextWithHint("video1", "set rtsp url here", m_url1, IM_ARRAYSIZE(m_url1));
 		m_VideoThread1->SetUrl(m_url1);
-		static int radio_video1 = 0;
+		static int radio_video1 = 1;
 		ImGui::RadioButton(u8"打开 video1", &radio_video1, 1); ImGui::SameLine(0, 0);
 		ImGui::RadioButton(u8"关闭 video1", &radio_video1, 0); ImGui::SameLine(0, 20);
 
@@ -65,7 +65,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::InputTextWithHint("video2", "set rtsp url here", m_url2, IM_ARRAYSIZE(m_url2));
 		m_VideoThread2->SetUrl(m_url2);
 
-		static int radio_video2 = 0;
+		static int radio_video2 = 1;
 		ImGui::RadioButton(u8"打开 video2", &radio_video2, 1); ImGui::SameLine(0, 0);
 		ImGui::RadioButton(u8"关闭 video2", &radio_video2, 0); ImGui::SameLine(0, 20);
 	
@@ -80,7 +80,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::InputTextWithHint("video3", "set rtsp url here", m_url3, IM_ARRAYSIZE(m_url3));
 		m_VideoThread3->SetUrl(m_url3);
 
-		static int radio_video3 = 0;
+		static int radio_video3 = 1;
 		ImGui::RadioButton(u8"打开 video3", &radio_video3, 1); ImGui::SameLine(0, 0);
 		ImGui::RadioButton(u8"关闭 video3", &radio_video3, 0); ImGui::SameLine(0, 20);
 	
@@ -100,8 +100,9 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 	}
 	{
 		ImGui::Begin("Video1");
-		if (!m_dataBufferList1.empty())
+		if (!m_dataBufferList1.empty() && m_VideoThread1->GetCaptureStatus())
 		{
+			bool a = m_dataBufferList1.empty();
 			mutex_data1.lock();
 			m_dataBuffer1 = m_dataBufferList1.back();
 			m_dataBufferList1.pop_back();
@@ -114,7 +115,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 	}
 	{
 		ImGui::Begin("Video2");
-		if (!m_dataBufferList2.empty())
+		if (!m_dataBufferList2.empty() && m_VideoThread2->GetCaptureStatus())
 		{
 			mutex_data2.lock();
 			m_dataBuffer2 = m_dataBufferList2.back();
@@ -128,7 +129,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 	}
 	{
 		ImGui::Begin("Video3");
-		if (!m_dataBufferList3.empty())
+		if (!m_dataBufferList3.empty() && m_VideoThread3->GetCaptureStatus())
 		{
 			mutex_data3.lock();
 			m_dataBuffer3 = m_dataBufferList3.back();
@@ -153,10 +154,9 @@ void VideoLayer::OnRenderData1(std::vector<uint8_t>&& data)
 {
 	mutex_data1.lock();
 	m_dataBufferList1.emplace_back(std::move(data));
-	mutex_data1.unlock();
-
 	if (m_dataBufferList1.size() > 3)
 		m_dataBufferList1.pop_back();
+	mutex_data1.unlock();
 }
 
 
@@ -173,10 +173,9 @@ void VideoLayer::OnRenderData2(std::vector<uint8_t>&& data)
 {
 	mutex_data2.lock();
 	m_dataBufferList2.emplace_back(std::move(data));
-	mutex_data2.unlock();
-
 	if (m_dataBufferList2.size() > 3)
 		m_dataBufferList2.pop_back();
+	mutex_data2.unlock();
 }
 
 
@@ -193,10 +192,9 @@ void VideoLayer::OnRenderData3(std::vector<uint8_t>&& data)
 {
 	mutex_data3.lock();
 	m_dataBufferList3.emplace_back(std::move(data));
-	mutex_data3.unlock();
-
 	if (m_dataBufferList3.size() > 3)
 		m_dataBufferList3.pop_back();
+	mutex_data3.unlock();
 }
 
 

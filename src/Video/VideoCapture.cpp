@@ -33,10 +33,10 @@ bool VideoCapture::open(const char *url)
 	
 	/* options rtsp*/
 	AVDictionary *opts = nullptr;
-	av_dict_set(&opts, "rtsp_transport", "udp", 0);
+	av_dict_set(&opts, "rtsp_transport", "tcp", 0);
 	av_dict_set(&opts, "buffer_size", "1024000", 0);
-	av_dict_set(&opts, "stimeout", "10000000", 0);
-	av_dict_set(&opts, "max_delay", "10000000", 0);
+	av_dict_set(&opts, "stimeout", "1000000", 0);
+	av_dict_set(&opts, "max_delay", "1000000", 0);
 	
 	if (avformat_open_input(&av_format_ctx, url, NULL, &opts) != 0) {
 		LOG(ERRO, "Could't open video url");

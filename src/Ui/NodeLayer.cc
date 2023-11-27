@@ -1,9 +1,8 @@
 ﻿#include "NodeLayer.h"
 #include "TransForm.h"
-#include "Utils.h"
 
 extern bool show_node_settings_layout;
-
+extern bool show_tool_log;
 
 void NodeLayer::OnAttach()
 {
@@ -36,6 +35,17 @@ void NodeLayer::OnUpdate(float ts)
 {   
     if (show_node_settings_layout) 
         Show_Node_Layout(&show_node_settings_layout);
+
+    if (show_tool_log)
+        Show_Tool_Log(&show_tool_log);
+}
+
+void NodeLayer::Show_Tool_Log(bool *p_open)
+{
+    ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+    ImGui::Begin(u8"日志", p_open);
+    ImGui::End();
+    m_Log.Draw(u8"日志", p_open);
 }
 
 void NodeLayer::Show_Node_Layout(bool *p_open)
@@ -45,7 +55,7 @@ void NodeLayer::Show_Node_Layout(bool *p_open)
 
         if (!(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize))
             ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetFontSize() * 12.0f), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin(u8"ROS", p_open) || ImGui::GetCurrentWindow()->BeginCount > 1)
+        if (!ImGui::Begin(u8"机器人", p_open) || ImGui::GetCurrentWindow()->BeginCount > 1)
         {
             ImGui::End();
             return;
@@ -75,7 +85,7 @@ void NodeLayer::Show_Node_Layout(bool *p_open)
         ImGui::End();
         // add map show view
         {
-            ImGui::Begin("View");
+            ImGui::Begin(u8"地图");
             OnRenderView();
             ImGui::End();
         }
@@ -108,6 +118,8 @@ void NodeLayer::Show_Node_Layout(bool *p_open)
             ImGui::PopItemWidth();
             ImGui::End();
         }
+        
+
     }
 }
 
@@ -115,12 +127,12 @@ void NodeLayer::OnRenderView()
 {
     /*get view info for all child*/
     m_viewStartPos = ImGui::GetCursorScreenPos();
-	m_viewportSize = ImGui::GetContentRegionAvail();
+    m_viewportSize = ImGui::GetContentRegionAvail();
+    if (!isCliented)
+        return;
     ViewMap();
-    if (isCliented) {
-        ViewRobot();
-        ViewPlanPoint();
-    }
+    ViewRobot();
+    ViewPlanPoint();
 }
 
 void NodeLayer::ViewMap()
@@ -200,6 +212,8 @@ void NodeLayer::ViewPlanPoint()
 
 void NodeLayer::OnRenderNav()
 {
+    if (!isCliented)
+        return;
     NavShowPlan();
     NavMessage();
 }
@@ -226,7 +240,7 @@ void NodeLayer::NavShowPlan()
     for (const auto &str : planNameList) {
         planNamesArray.push_back(str.c_str());
     }
-    ImGui::Combo(u8"线路", &m_current_plan, planNamesArray.data(), static_cast<int>(planNamesArray.size()));
+    ImGui::Combo(u8"线路选择", &m_current_plan, planNamesArray.data(), static_cast<int>(planNamesArray.size()));
 
     ImGui::NewLine();
 
@@ -257,6 +271,7 @@ void NodeLayer::NavShowPlan()
     }
     ImGui::NewLine();
     if(ImGui::Button(u8"发布路线", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
+
         manager_msgs::Status status;
         status.status = status.DELETEALL;
         m_AppNode->pubCmdPlan(status);
@@ -269,6 +284,7 @@ void NodeLayer::NavShowPlan()
 
     ImGui::SameLine(0, 10);
     if(ImGui::Button(u8"开始执行", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
+        m_current_goal = -1;
         manager_msgs::Status status;
         status.status = status.START;
         m_AppNode->pubCmdPlan(status);
@@ -287,7 +303,7 @@ void NodeLayer::NavShowPlan()
         m_AppNode->pubCmdPlan(status);
     }
 
-    HelpMarker(u8"选择路线后，点击执行即可");
+
 }
 
 void NodeLayer::NavMessage()
@@ -301,10 +317,20 @@ void NodeLayer::NavMessage()
 
     ImGui::Text(u8"执行消息"); ImGui::SameLine(0, 20);
     ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_plan_back_msg.c_str());
+ 
+    HelpMarker(u8"1.选择路线后，可以在目标点以及左侧视窗中查看具体目标点。\n" \
+                 "2.目标点中按顺序列出了所有当前线路途经的目标，机器人导航过程中最近途经的目标点高亮显示。\n" \
+                 "3.点击发布路线，可以将当前路线发布给机器。\n" \
+                 "4.点击开始执行，当前发布的线路被激活，机器人开始执行计划路线。\n" \
+                 "5.点击暂停导航，机器人暂停当前路线。\n" \
+                 "6.点击继续导航，机器人继续当前路线。\n" \
+                 "7.最后一个目标点高亮时表示当前路线执行完毕。");
 }
 
 void NodeLayer::OnRenderMake()
 {
+    if (!isCliented)
+        return;
     MakePlan();
 }
 
@@ -479,6 +505,8 @@ void NodeLayer::OnPlanCallback(const std_msgs::String &str)
     m_plan_back_msg = str.data;
     int temp = 0;
     
+    m_Log.AddLog("%s\n", m_plan_back_msg.c_str());
+
     int ret = sscanf(m_planBackString.data, "Plan MOVE [%d] successed", &temp);
     if(ret)
         m_current_goal = temp - 1;

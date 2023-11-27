@@ -7,6 +7,7 @@
 #include "AppNode.h"
 #include "Texuture.h"
 #include "PlanManager.h"
+#include "Utils.h"
 
 
 class NodeLayer : public Layer
@@ -31,7 +32,10 @@ private:
     void OnPlanCallback(const std_msgs::String &str);
     
     /*Ros all View*/
+    AppLog m_Log;
+    void Show_Tool_Log(bool *p_open);
     void Show_Node_Layout(bool *p_open);
+
 
     /*Ros Map View*/
     std::unique_ptr<Texture> m_Texture_Map;
@@ -52,6 +56,7 @@ private:
     int m_current_goal;
     void OnRenderNav();
     void NavShowPlan();
+
     void NavMessage();
 
     /*Ros Mav Make Plan View*/

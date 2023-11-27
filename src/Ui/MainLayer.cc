@@ -1,7 +1,10 @@
 ﻿#include "MainLayer.h"
+#include "Utils.h"
 
 bool show_video_layout = true;
 bool show_node_settings_layout = true;
+bool show_tool_style_editor = false;
+bool show_tool_log = false;
 
 void MainLayer::OnUpdate(float ts)
 {
@@ -40,7 +43,7 @@ void MainLayer::OnUpdate(float ts)
 	if (!opt_padding)
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin("Demo", nullptr, window_flags);
+	ImGui::Begin("Main", nullptr, window_flags);
 	if (!opt_padding)
 		ImGui::PopStyleVar();
 
@@ -60,7 +63,7 @@ void MainLayer::OnUpdate(float ts)
 		if(ImGui::BeginMenu(u8"视窗")) 
 		{
 			ImGui::MenuItem(u8"视频", NULL, &show_video_layout);
-			ImGui::MenuItem(u8"ROS", NULL, &show_node_settings_layout);
+			ImGui::MenuItem(u8"机器人", NULL, &show_node_settings_layout);
 			ImGui::EndMenu();
 		}
 
@@ -79,6 +82,33 @@ void MainLayer::OnUpdate(float ts)
 			if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
 			if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
 			ImGui::Separator();
+			ImGui::EndMenu();
+		}
+
+		if(ImGui::BeginMenu(u8"工具")) 
+		{
+			ImGui::ShowStyleSelector(u8"选择主题");
+			ImGui::MenuItem(u8"日志", NULL, &show_tool_log);
+			ImGui::EndMenu();
+		}
+
+		if(ImGui::BeginMenu(u8"帮助")) 
+		{
+			HelpMarker(u8"界面说明:\n" \
+						"\t地图--显示地图、导航路线、以及机器人位置\n" \
+						"\t机器人--用于连接机器人\n" \
+						"\t\t导航--用于路线的选择、发布\n" \
+						"\t视频--用于控制视频流的开关\n" \
+						"\t\tvideo1--视频1显示区\n" \
+						"\t\tvideo2--视频2显示区\n" \
+						"\t\tvideo3--视频3显示区\n\n" \
+						"操作步骤：\n" \
+						"\t1: 在右侧视频栏窗口点击打开视频\n" \
+					    "\t2: 在右侧ROS栏窗口点击连接机器人\n"\
+						"\t3: 在右侧导航窗口选择好路线后发布路线\n\n" \
+						"特殊说明：\n" \
+						"\t 路线制作功能不要使用!!!");
+
 			ImGui::EndMenu();
 		}
 		ImGui::EndMenuBar();

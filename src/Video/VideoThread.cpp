@@ -55,7 +55,7 @@ void VideoThread::run()
             bool isDecodeSucceed;
             isDecodeSucceed = m_VideoCapture->decode(m_data, &m_pts);
             if (isDecodeSucceed) {
-                OnRenderDataCallback(std::vector<uint8_t>(m_data, m_data + lenght));
+               OnRenderDataCallback(std::vector<uint8_t>(m_data, m_data + lenght));
             }
             this->sleepMs(10);
         }
