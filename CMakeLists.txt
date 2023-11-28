@@ -108,8 +108,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
 
 
 #===================== LINKING LIBRARIES =======================#
-target_link_libraries(${PROJECT_NAME} ${EXTRA_LIBS} swscale avformat avdevice  avcodec avutil )
+target_link_libraries(${PROJECT_NAME} ${EXTRA_LIBS} swscale avformat avdevice  avcodec avutil)
 
-file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/config/imgui.ini DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-file(COPY ${CMAKE_SOURCE_DIR}/thirdparty/FFmpeg/bin DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/output)
+
+file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+file(COPY ${CMAKE_SOURCE_DIR}/config/imgui.ini DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
+file (GLOB FFMPEG_COPY_DLL "${CMAKE_SOURCE_DIR}/thirdparty/FFmpeg/bin/*")
+file(COPY ${FFMPEG_COPY_DLL} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})

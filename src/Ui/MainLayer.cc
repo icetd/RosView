@@ -3,8 +3,7 @@
 
 bool show_video_layout = true;
 bool show_node_settings_layout = true;
-bool show_tool_style_editor = false;
-bool show_tool_log = false;
+bool show_tool_log = true;
 
 void MainLayer::OnUpdate(float ts)
 {
