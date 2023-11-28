@@ -29,13 +29,13 @@ build/output/Release/RosView.exe
 
 ```
 1. I don’t want to make my windows development environment look untidy by configuring the ros environment.
-2. In order to make it more convenient to use on other machines
+2. In order to make it more convenient to use on other machines.
 ```
 
 ### Why not Qt
 
 ```
-Qt is very convenient, but it's slot functions lose performance for wider compatibility.
+Qt is very convenient, but its slot function performance is worrying.
 ```
 
 ## Thanks
