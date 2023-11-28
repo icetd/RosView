@@ -5,7 +5,7 @@ add_subdirectory(thirdparty/glfw)
 add_subdirectory(thirdparty/glm)
 
 set (CMKAE_CXX_STANDARD 14)
-set (CMAKE_BUILD_TYPE Relesae)
+set (CMAKE_BUILD_TYPE Release)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -111,5 +111,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} ${EXTRA_LIBS} swscale avformat avdevice  avcodec avutil )
 
 file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/config/imgui.ini DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/thirdparty/FFmpeg/bin DESTINATION ${CMAKE_BINARY_DIR}/Debug)
+file(COPY ${CMAKE_SOURCE_DIR}/config/imgui.ini DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+file(COPY ${CMAKE_SOURCE_DIR}/thirdparty/FFmpeg/bin DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
