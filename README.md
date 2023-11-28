@@ -24,3 +24,22 @@ build/output/Release/RosView.exe
 ```
 
 ![](pic/RosView.png)
+
+### Why not use ros environment on windows
+
+```
+1. I don’t want to make my windows development environment look untidy by configuring the ros environment.
+2. In order to make it more convenient to use on other machines
+```
+
+### Why not Qt
+
+```
+Qt is very convenient, but it's slot functions lose performance for wider compatibility.
+```
+
+## Thanks
+
+[TheCherno](https://github.com/StudioCherno/Walnut/commits?author=TheCherno) https://github.com/StudioCherno/Walnut
+
+[FFmpeg](https://github.com/FFmpeg/FFmpeg.git)
