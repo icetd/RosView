@@ -402,7 +402,7 @@ void NodeLayer::MakePlan()
     static int goal_type = 2;
     ImGui::Combo(u8"目标点类型", &goal_type, goal_type_items, IM_ARRAYSIZE(goal_type_items));
 
-    const char *action_id_items[] = {"NULL", u8"取油", u8"扫码", u8"过桥"};
+    const char *action_id_items[] = {"NULL", u8"ACTION1", u8"ACTION2", u8"ACTION3"};
     static int action_id = 0;
     ImGui::Combo("ACTION_ID", &action_id, action_id_items, IM_ARRAYSIZE(action_id_items));
 

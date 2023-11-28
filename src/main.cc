@@ -12,7 +12,7 @@
 int main(int argc, char **argv)
 {
     initLogger(INFO);
-    Application *app = new Application("app", 1920, 1080);
+    Application *app = new Application("ROSVIEW", 1920, 1080);
     app->PushLayer<MainLayer>();
     app->PushLayer<VideoLayer>();
     app->PushLayer<NodeLayer>();
