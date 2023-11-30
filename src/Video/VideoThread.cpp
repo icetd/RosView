@@ -58,6 +58,8 @@ void VideoThread::run()
                OnRenderDataCallback(std::vector<uint8_t>(m_data, m_data + lenght));
             }
             this->sleepMs(10);
+        } else {
+            this->sleepMs(100);
         }
     }
 }
