@@ -9,7 +9,7 @@
 #include "NodeLayer.h"
 #include "log.h"
 
-#define VLD 1
+#define VLD 0
 
 #if VLD
 #include <vld.h>
