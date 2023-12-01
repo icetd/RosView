@@ -104,7 +104,6 @@ bool AppNode::init(char *master_url)
         m_back_plan_sub = new ros::Subscriber<std_msgs::String> ("/manager/back", &plan_callback);
         nh->subscribe(*m_back_plan_sub);
     }
-    Sleep(10);
     return true;
 }
 
@@ -167,7 +166,7 @@ void AppNode::run()
     int ret = 0;
     while (!isStoped())
     {
-        if (isClient) {
+        if (isClient && nh) {
            ret = nh->spinOnce();
            Sleep(100);
         } else {
