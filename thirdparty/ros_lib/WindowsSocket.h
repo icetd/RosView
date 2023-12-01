@@ -1,4 +1,4 @@
-/**
+﻿/**
 Software License Agreement (BSD)
 
 \file      WindowsSocket.h
@@ -35,6 +35,7 @@ class WindowsSocket
 {
 public:
   WindowsSocket ();
+  ~WindowsSocket ();
 
   void init (char *server_hostname);
 

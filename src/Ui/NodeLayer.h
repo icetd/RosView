@@ -1,4 +1,4 @@
-#ifndef NODE_LAYER_H
+﻿#ifndef NODE_LAYER_H
 #define NODE_LAYER_H
 
 #include <memory>
@@ -15,10 +15,11 @@ class NodeLayer : public Layer
 protected:
     virtual void OnAttach() override;
     virtual void OnUpdate(float ts) override;
+    virtual void OnDetach() override;
 
 private:
     char m_master_url[128] = "192.168.2.162:11411";
-    AppNode *m_AppNode;
+    AppNode *m_AppNode = nullptr;
     bool isCliented;
     
     geometry_msgs::PoseWithCovarianceStamped m_pose = {};

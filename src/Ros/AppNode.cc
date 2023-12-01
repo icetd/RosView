@@ -1,4 +1,4 @@
-#include "AppNode.h"
+﻿#include "AppNode.h"
 #include <windows.h>
 #include <map>
 #include <vector>
@@ -11,6 +11,28 @@ AppNode *AppNode::GetInstance()
         instance = new AppNode();
     }
     return instance;
+}
+
+void AppNode::FreeAll()
+{
+	if (m_amcl_pose_sub) {
+        delete m_cmd_vel_pub;
+        m_cmd_vel_pub = nullptr;
+		delete m_amcl_pose_sub;
+        m_amcl_pose_sub = nullptr;
+		delete m_back_plan_sub;
+		m_back_plan_sub = nullptr;
+		delete m_cmd_plan_pub;
+		m_cmd_plan_pub = nullptr;
+		delete m_map_metaData_sub;
+		m_map_metaData_sub = nullptr;
+		delete m_plan_pub;
+        m_plan_pub = nullptr;
+	}
+    if (nh) {
+        delete nh;
+        nh = nullptr;
+    }
 }
 
 AppNode::AppNode() :
@@ -60,27 +82,29 @@ bool AppNode::init(char *master_url)
     bool ret;
     if (!isClient) {
         isClient = true;
-        nh.initNode(master_url);
-        nh.setSpinTimeout(10000);
+        nh = new ros::NodeHandle();
+        nh->initNode(master_url);
+        nh->setSpinTimeout(10000);
 
         m_cmd_vel_pub = new ros::Publisher("cmd_vel", &twist_msg);
-        nh.advertise(*m_cmd_vel_pub);
+        nh->advertise(*m_cmd_vel_pub);
         
         m_amcl_pose_sub = new ros::Subscriber<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", &amcl_pose_callback);
-        nh.subscribe(*m_amcl_pose_sub);
+        nh->subscribe(*m_amcl_pose_sub);
 
         m_map_metaData_sub = new ros::Subscriber<nav_msgs::MapMetaData> ("/map_metadata", &map_meta_callback);
-        nh.subscribe(*m_map_metaData_sub);
+        nh->subscribe(*m_map_metaData_sub);
         
         m_cmd_plan_pub = new ros::Publisher("/manager/cmd_plan", &cmd_plan_msg);
-        nh.advertise(*m_cmd_plan_pub);
+        nh->advertise(*m_cmd_plan_pub);
 
         m_plan_pub = new ros::Publisher("/manager/plan", &plan_msg);
-        nh.advertise(*m_plan_pub);
+        nh->advertise(*m_plan_pub);
 
         m_back_plan_sub = new ros::Subscriber<std_msgs::String> ("/manager/back", &plan_callback);
-        nh.subscribe(*m_back_plan_sub);
+        nh->subscribe(*m_back_plan_sub);
     }
+    Sleep(10);
     return true;
 }
 
@@ -88,7 +112,9 @@ bool AppNode::destroy()
 {
     if (isClient) {
         isClient = false;
+        FreeAll();
     }
+
     return true;
 }
 
@@ -115,7 +141,7 @@ void AppNode::move(char key, float speed_linear, float speed_angular)
     twist_msg.angular.z = direction_yaw * speed_angular;
 
     m_cmd_vel_pub->publish(&twist_msg);
-    nh.spinOnce(); 
+    nh->spinOnce(); 
 }
 
 void AppNode::pubPlan(manager_msgs::Plan &plan_goal)
@@ -124,7 +150,7 @@ void AppNode::pubPlan(manager_msgs::Plan &plan_goal)
     m_plan_pub->publish(&plan_msg);
 
     Sleep(100);
-    nh.spinOnce(); 
+    nh->spinOnce(); 
 }
 
 void AppNode::pubCmdPlan(manager_msgs::Status &plan_cmd)
@@ -133,7 +159,7 @@ void AppNode::pubCmdPlan(manager_msgs::Status &plan_cmd)
     m_cmd_plan_pub->publish(&cmd_plan_msg);
 
     Sleep(100);
-    nh.spinOnce(); 
+    nh->spinOnce(); 
 }
 
 void AppNode::run()
@@ -142,7 +168,7 @@ void AppNode::run()
     while (!isStoped())
     {
         if (isClient) {
-           ret = nh.spinOnce();
+           ret = nh->spinOnce();
            Sleep(100);
         } else {
             Sleep(500);

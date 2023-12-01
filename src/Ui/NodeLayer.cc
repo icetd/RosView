@@ -31,6 +31,14 @@ void NodeLayer::OnAttach()
     m_AppNode->start();
 }
 
+void NodeLayer::OnDetach()
+{
+    m_AppNode->destroy();
+
+    if (m_AppNode)
+        delete m_AppNode;
+}
+
 void NodeLayer::OnUpdate(float ts)
 {   
     if (show_node_settings_layout) 

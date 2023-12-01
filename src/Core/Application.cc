@@ -28,7 +28,7 @@ Application::Application(const char *appName, int w, int h) :
 
 Application::~Application()
 {
-
+	Shutdown();
 }
 
 void Application::Init()

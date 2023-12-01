@@ -1,4 +1,4 @@
-#ifndef APP_NODE_H
+﻿#ifndef APP_NODE_H
 #define APP_NODE_H
 
 #include <ros.h>
@@ -16,13 +16,17 @@
 
 #include "MThread.h"
 
-class AppNode : public MThread
+class AppNode : public MThread 
 {
 public:
+    AppNode();
+    virtual ~AppNode();
+ 
     AppNode(AppNode &other) = delete;
     void operator = ( const AppNode &) = delete;
 
     static AppNode *GetInstance();
+
     bool init(char *master_url);
     bool destroy();
 
@@ -43,31 +47,31 @@ public:
     void setOnPlanCallback(std::function<void (const std_msgs::String &str)> callback);
     
 protected:
-    AppNode();
-    virtual ~AppNode();
+
     virtual void run() override;
 
 private:
     static AppNode *instance;
 
-    ros::NodeHandle nh;
+    ros::NodeHandle *nh;
     std::string url;
  
     geometry_msgs::Twist twist_msg;
-    ros::Publisher *m_cmd_vel_pub;
+    ros::Publisher *m_cmd_vel_pub = nullptr;
     
-    ros::Subscriber<geometry_msgs::PoseWithCovarianceStamped> *m_amcl_pose_sub;
-    ros::Subscriber<nav_msgs::MapMetaData> *m_map_metaData_sub;
+    ros::Subscriber<geometry_msgs::PoseWithCovarianceStamped> *m_amcl_pose_sub = nullptr;
+    ros::Subscriber<nav_msgs::MapMetaData> *m_map_metaData_sub = nullptr;
 
     manager_msgs::Status cmd_plan_msg;
-    ros::Publisher *m_cmd_plan_pub;
+    ros::Publisher *m_cmd_plan_pub = nullptr;
     
     manager_msgs::Plan plan_msg;
-    ros::Publisher *m_plan_pub;
+    ros::Publisher *m_plan_pub = nullptr;
     
-    ros::Subscriber<std_msgs::String> *m_back_plan_sub;
+    ros::Subscriber<std_msgs::String> *m_back_plan_sub = nullptr;
 
     bool isClient;
+    void FreeAll();
 };
 
 

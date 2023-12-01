@@ -5,7 +5,7 @@ add_subdirectory(thirdparty/glfw)
 add_subdirectory(thirdparty/glm)
 
 set (CMKAE_CXX_STANDARD 14)
-set (CMAKE_BUILD_TYPE Release)
+set (CMAKE_BUILD_TYPE Debug)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -24,9 +24,12 @@ set (FFMPEG_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/thirdparty/FFmpeg/include")
 set (FFMPEG_LIB_DIR     "${CMAKE_CURRENT_LIST_DIR}/thirdparty/FFmpeg/lib")
 set (SQLITE3_SRC		"${CMAKE_CURRENT_LIST_DIR}/thirdparty/sqlite3")
 set (SQLITE3_INC		"${CMAKE_CURRENT_LIST_DIR}/thirdparty/sqlite3")
+set (VLD_INCLUDE_DIR    "${CMAKE_SOURCE_DIR}/thirdparty/VLD/include")
+set (VLD_LIB_DIR        "${CMAKE_SOURCE_DIR}/thirdparty/VLD/lib")
 
 link_directories(
 		${FFMPEG_LIB_DIR}
+		${VLD_LIB_DIR}
 )
 
 include_directories(
@@ -48,6 +51,7 @@ include_directories(
 	${FFMPEG_INCLUDE_DIR}
     ${ROS_LIB}
 	${SQLITE3_INC}
+	${VLD_INCLUDE_DIR}
 ) 
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
