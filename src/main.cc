@@ -3,11 +3,9 @@
 #include <Windows.h>
 #include "Application.h"
 #include "log.h"
-
 #include "MainLayer.h"
 #include "VideoLayer.h"
 #include "NodeLayer.h"
-#include "log.h"
 
 #define VLD 0
 
