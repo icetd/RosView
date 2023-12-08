@@ -16,62 +16,62 @@
 
 #include "MThread.h"
 
-class AppNode : public MThread 
+class AppNode : public MThread
 {
 public:
-    AppNode();
-    virtual ~AppNode();
- 
-    AppNode(AppNode &other) = delete;
-    void operator = ( const AppNode &) = delete;
+	AppNode();
+	virtual ~AppNode();
 
-    static AppNode *GetInstance();
+	AppNode(AppNode& other) = delete;
+	void operator = (const AppNode&) = delete;
 
-    bool init(char *master_url);
-    bool destroy();
+	static AppNode* GetInstance();
 
-    void move(char key, float speed_linear, float speed_angular);
-    void pubPlan(manager_msgs::Plan &plan_goal);
-    void pubCmdPlan(manager_msgs::Status &plan_cmd);
+	bool init(char* master_url);
+	bool destroy();
 
-    void setClient(bool is_client) { isClient = is_client; }
-    bool getClient() { return isClient; }
+	void move(char key, float speed_linear, float speed_angular);
+	void pubPlan(manager_msgs::Plan& plan_goal);
+	void pubCmdPlan(manager_msgs::Status& plan_cmd);
 
-    std::function<void (const geometry_msgs::PoseWithCovarianceStamped &)> OnAmclPoseCallback;
-    void setOnAmclPoseCallback(std::function<void (const geometry_msgs::PoseWithCovarianceStamped & pose)> callback);
+	void setClient(bool is_client) { isClient = is_client; }
+	bool getClient() { return isClient; }
 
-    std::function<void (const nav_msgs::MapMetaData &)> OnMapMetaCallback;
-    void setOnMapMetaCallback(std::function<void (const nav_msgs::MapMetaData &mapMeta)> callback);
+	std::function<void(const geometry_msgs::PoseWithCovarianceStamped&)> OnAmclPoseCallback;
+	void setOnAmclPoseCallback(std::function<void(const geometry_msgs::PoseWithCovarianceStamped& pose)> callback);
 
-    std::function<void (const std_msgs::String &)> OnPlanCallback;
-    void setOnPlanCallback(std::function<void (const std_msgs::String &str)> callback);
-    
+	std::function<void(const nav_msgs::MapMetaData&)> OnMapMetaCallback;
+	void setOnMapMetaCallback(std::function<void(const nav_msgs::MapMetaData& mapMeta)> callback);
+
+	std::function<void(const std_msgs::String&)> OnPlanCallback;
+	void setOnPlanCallback(std::function<void(const std_msgs::String& str)> callback);
+
 protected:
 
-    virtual void run() override;
+	virtual void run() override;
 
 private:
-    static AppNode *instance;
+	static AppNode* instance;
 
-    ros::NodeHandle *nh;
-    std::string url;
- 
-    geometry_msgs::Twist twist_msg;
-    ros::Publisher *m_cmd_vel_pub = nullptr;
-    
-    ros::Subscriber<geometry_msgs::PoseWithCovarianceStamped> *m_amcl_pose_sub = nullptr;
-    ros::Subscriber<nav_msgs::MapMetaData> *m_map_metaData_sub = nullptr;
+	ros::NodeHandle* nh;
+	std::string url;
 
-    manager_msgs::Status cmd_plan_msg;
-    ros::Publisher *m_cmd_plan_pub = nullptr;
-    
-    manager_msgs::Plan plan_msg;
-    ros::Publisher *m_plan_pub = nullptr;
-    
-    ros::Subscriber<std_msgs::String> *m_back_plan_sub = nullptr;
+	geometry_msgs::Twist twist_msg;
+	ros::Publisher* m_cmd_vel_pub = nullptr;
 
-    bool isClient;
-    void FreeAll();
+	ros::Subscriber<geometry_msgs::PoseWithCovarianceStamped>* m_amcl_pose_sub = nullptr;
+	ros::Subscriber<nav_msgs::MapMetaData>* m_map_metaData_sub = nullptr;
+
+	manager_msgs::Status cmd_plan_msg;
+	ros::Publisher* m_cmd_plan_pub = nullptr;
+
+	manager_msgs::Plan plan_msg;
+	ros::Publisher* m_plan_pub = nullptr;
+
+	ros::Subscriber<std_msgs::String>* m_back_plan_sub = nullptr;
+
+	bool isClient;
+	void FreeAll();
 };
 
 
