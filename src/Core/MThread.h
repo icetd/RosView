@@ -1,4 +1,4 @@
-#ifndef THREAD_H
+﻿#ifndef THREAD_H
 #define THREAD_H
 
 #include <thread>
@@ -10,7 +10,7 @@ class MThread
 public:
 	MThread();
 	virtual ~MThread();
-	
+
 	std::thread::id getId();
 
 	void start();

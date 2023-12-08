@@ -1,4 +1,4 @@
-#ifndef VIDEO_CAPTURE_H
+﻿#ifndef VIDEO_CAPTURE_H
 #define VIDEO_CAPTURE_H
 
 #ifdef __cplusplus
@@ -20,8 +20,8 @@ public:
 	VideoCapture();
 	~VideoCapture();
 	void init();
-	bool open(const char *url);
-	bool decode(uint8_t *frame, int64_t *pts);
+	bool open(const char* url);
+	bool decode(uint8_t* frame, int64_t* pts);
 	bool close();
 
 	int getWidth() { return width; }
@@ -33,11 +33,11 @@ private:
 
 	int video_stream_index;
 	AVRational time_base;
-	AVFormatContext *av_format_ctx;
-	AVCodecContext *av_codec_ctx;
-	AVFrame *av_frame;
-	AVPacket *av_packet;
-	SwsContext *sws_scaler_ctx;
+	AVFormatContext* av_format_ctx;
+	AVCodecContext* av_codec_ctx;
+	AVFrame* av_frame;
+	AVPacket* av_packet;
+	SwsContext* sws_scaler_ctx;
 };
 
 #endif

@@ -1,4 +1,4 @@
-#ifndef LAYER_H
+﻿#ifndef LAYER_H
 #define LAYER_H
 
 #include "imgui.h"

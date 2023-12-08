@@ -33,7 +33,7 @@ void MainLayer::OnUpdate(float ts)
 	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 		window_flags |= ImGuiWindowFlags_NoBackground;
 
-		
+
 	// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
 	// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
 	// all active windows docked into it will lose their parent and become undocked.
@@ -59,7 +59,7 @@ void MainLayer::OnUpdate(float ts)
 
 	if (ImGui::BeginMenuBar())
 	{
-		if(ImGui::BeginMenu(u8"视窗")) 
+		if (ImGui::BeginMenu(u8"视窗"))
 		{
 			ImGui::MenuItem(u8"视频", NULL, &show_video_layout);
 			ImGui::MenuItem(u8"机器人", NULL, &show_node_settings_layout);
@@ -84,29 +84,29 @@ void MainLayer::OnUpdate(float ts)
 			ImGui::EndMenu();
 		}
 
-		if(ImGui::BeginMenu(u8"工具")) 
+		if (ImGui::BeginMenu(u8"工具"))
 		{
 			ImGui::ShowStyleSelector(u8"选择主题");
 			ImGui::MenuItem(u8"日志", NULL, &show_tool_log);
 			ImGui::EndMenu();
 		}
 
-		if(ImGui::BeginMenu(u8"帮助")) 
+		if (ImGui::BeginMenu(u8"帮助"))
 		{
 			HelpMarker(u8"界面说明:\n" \
-						"\t地图--显示地图、导航路线、以及机器人位置\n" \
-						"\t机器人--用于连接机器人\n" \
-						"\t\t导航--用于路线的选择、发布\n" \
-						"\t视频--用于控制视频流的开关\n" \
-						"\t\tvideo1--视频1显示区\n" \
-						"\t\tvideo2--视频2显示区\n" \
-						"\t\tvideo3--视频3显示区\n\n" \
-						"操作步骤：\n" \
-						"\t1: 在右侧视频栏窗口点击打开视频\n" \
-					    "\t2: 在右侧ROS栏窗口点击连接机器人\n"\
-						"\t3: 在右侧导航窗口选择好路线后发布路线\n\n" \
-						"特殊说明：\n" \
-						"\t 路线制作功能谨慎使用!!!");
+				"\t地图--显示地图、导航路线、以及机器人位置\n" \
+				"\t机器人--用于连接机器人\n" \
+				"\t\t导航--用于路线的选择、发布\n" \
+				"\t视频--用于控制视频流的开关\n" \
+				"\t\tvideo1--视频1显示区\n" \
+				"\t\tvideo2--视频2显示区\n" \
+				"\t\tvideo3--视频3显示区\n\n" \
+				"操作步骤：\n" \
+				"\t1: 在右侧视频栏窗口点击打开视频\n" \
+				"\t2: 在右侧ROS栏窗口点击连接机器人\n"\
+				"\t3: 在右侧导航窗口选择好路线后发布路线\n\n" \
+				"特殊说明：\n" \
+				"\t 路线制作功能谨慎使用!!!");
 
 			ImGui::EndMenu();
 		}

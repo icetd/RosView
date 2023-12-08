@@ -1,4 +1,4 @@
-#ifndef TRANS_FORM_H
+﻿#ifndef TRANS_FORM_H
 #define TRANS_FORM_H
 
 #include <cmath>
@@ -8,11 +8,11 @@
 #define M_PI 3.141592653589793
 
 struct Quaternion {
-    double w, x, y, z;
+	double w, x, y, z;
 };
- 
+
 struct EulerAngles {
-    double roll, pitch, yaw;
+	double roll, pitch, yaw;
 };
 
 EulerAngles ToEulerAngles(Quaternion q);
