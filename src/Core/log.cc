@@ -44,7 +44,7 @@ void log (PriorityLevel level, const char* file, const int line, const char *fmt
 	XX(FATAL,       WHITE);
 	XX(ALERT,       WHITE);
 	XX(CRIT,        WHITE);
-	XX(ERRO,       RED);
+	XX(ERRO,        RED);
 	XX(WARN,        YELLOW);
 	XX(INFO,        GREEN);
 	XX(NOTICE,      CYAN);
