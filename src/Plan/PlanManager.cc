@@ -1,6 +1,7 @@
-﻿#include "PlanManager.h"
+#include "PlanManager.h"
 #include "log.h"
 #include <iostream>
+#include <string>
 
 PlanManager::PlanManager() :
 	m_cur_plan_id(0),
@@ -80,8 +81,8 @@ int PlanManager::pushPlans()
 	int re = m_plans.OpenDb("../res/db/navDataBase.db");
 	if (re == SQLITE_OK) {
 		for (auto iter = m_planList.begin(); iter != m_planList.end(); ++iter) {
-			sprintf(temp, "insert into nav_plans(id, plan_id, plan_name) values('%d', '%d', '%s')",
-				iter->first, iter->first, iter->second.GetName().c_str());
+			sprintf(temp, "insert into nav_plans(id, plan_id, plan_name, plan_show_name) values('%d', '%d', '%s', '%s')",
+				iter->first, iter->first, iter->second.GetName().c_str(), iter->second.GetShowName().c_str());
 			sql = temp;
 			re = m_plans.Insert(sql);
 			iter->second.pushPlan();
@@ -95,8 +96,8 @@ int PlanManager::pullPlans()
 {
 	std::string sql;
 	char temp[256];
-	std::vector<std::string> arrKey;
-	std::vector<std::vector<std::string>> arrValue;
+    std::vector<std::string> arrKey;
+    std::vector<std::vector<std::string>> arrValue;
 
 	arrKey.clear();
 	arrValue.clear();
@@ -112,8 +113,10 @@ int PlanManager::pullPlans()
 			for (int i = 0; i < plan_num; ++i) {
 				int plan_id = atoi(arrValue[i][1].c_str());
 				std::string plan_name = arrValue[i][2];
+				std::string plan_show_name = arrValue[i][3].c_str();
 				LOG(INFO, "add %s from database.", plan_name.c_str());
 				NavPlan plan(plan_name);
+				plan.SetShowName(plan_show_name);
 				this->AddPlan(plan);
 			}
 
@@ -125,6 +128,7 @@ int PlanManager::pullPlans()
 					int goal_num = arrValue.size();
 					for (int i = 0; i < goal_num; ++i) {
 						manager_msgs::Plan goal;
+						std::string goalname;
 						goal.id = atoi(arrValue[i][1].c_str());
 						goal.type.status = atoi(arrValue[i][2].c_str());
 						goal.action_id = atoi(arrValue[i][3].c_str());
@@ -133,7 +137,10 @@ int PlanManager::pullPlans()
 						goal.pose.position.z = 0.0f;
 						goal.pose.orientation.z = atof(arrValue[i][6].c_str());
 						goal.pose.orientation.w = atof(arrValue[i][7].c_str());
-						iter->second.Addgoal(goal);
+						goalname = arrValue[i][8];
+						goal.needle_capacity = atoi(arrValue[i][9].c_str());
+						goal.alignment_offset = atoi(arrValue[i][10].c_str());
+						iter->second.Addgoal(goal, goalname);
 					}
 				}
 				else {

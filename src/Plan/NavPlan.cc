@@ -1,4 +1,5 @@
-﻿#include "NavPlan.h"
+#include "NavPlan.h"
+#include <iostream>
 
 NavPlan::NavPlan(std::string& plan_name) :
 	m_cur_goal_id(0),
@@ -12,11 +13,12 @@ NavPlan::~NavPlan()
 {
 }
 
-int NavPlan::Addgoal(const manager_msgs::Plan& goal)
+int NavPlan::Addgoal(const manager_msgs::Plan& goal, std::string& goalName)
 {
 	m_cur_goal_id++;
 	m_goal_num = m_cur_goal_id;
 	m_GoalList.insert(std::make_pair(m_cur_goal_id, goal));
+	m_GoalNameList.insert(std::make_pair(m_cur_goal_id, goalName));
 	return 1;
 }
 
@@ -24,6 +26,7 @@ int NavPlan::Deletegoal(int goalId)
 {
 	if (goalId <= m_goal_num) {
 		m_GoalList.erase(goalId);
+		m_GoalNameList.erase(goalId);
 		m_cur_goal_id--;
 	}
 	return 1;
@@ -32,6 +35,7 @@ int NavPlan::Deletegoal(int goalId)
 int NavPlan::Clear()
 {
 	m_GoalList.clear();
+	m_GoalNameList.clear();
 	m_cur_goal_id = 0;
 	m_goal_num = 0;
 
@@ -47,7 +51,8 @@ int NavPlan::pushPlan()
 	if (re != SQLITE_OK)
 		return 0;
 
-	sprintf(temp, "create table %s(id integer primary key autoincrement,goal_id integer,goal_type integer,action_id intefer, px REAL,py REAL,oz REAL,ow REAL)",
+	sprintf(temp, 
+	"create table %s(id integer primary key autoincrement,goal_id integer,goal_type integer,action_id intefer, px REAL,py REAL,oz REAL,ow REAL, name text, needle_capcity intefer, alignment_offset intefer)",
 		m_plan_name.c_str());
 	sql = temp;
 	m_plan.CreateTable(sql);
@@ -55,11 +60,13 @@ int NavPlan::pushPlan()
 		return 0;
 
 	for (auto iter = m_GoalList.begin(); iter != m_GoalList.end(); ++iter) {
-		sprintf(temp, "insert into %s(id, goal_id, goal_type, action_id, px, py, oz, ow) values('%d', '%d', '%d', %d, '%f', '%f', '%f', '%f')",
+		std::string goalName = m_GoalNameList.find(iter->first)->second;
+		sprintf(temp, "insert into %s(id, goal_id, goal_type, action_id, px, py, oz, ow, name,needle_capcity, alignment_offset) values('%d', '%d', '%d', %d, '%f', '%f', '%f', '%f', '%s','%d', '%d')",
 			m_plan_name.c_str(),
 			iter->first, iter->second.id, iter->second.type.status, iter->second.action_id,
 			iter->second.pose.position.x, iter->second.pose.position.y,
-			iter->second.pose.orientation.z, iter->second.pose.orientation.w);
+			iter->second.pose.orientation.z, iter->second.pose.orientation.w,
+			goalName.c_str(), iter->second.needle_capacity, iter->second.alignment_offset);
 		sql = temp;
 		m_plan.Insert(sql);
 	}

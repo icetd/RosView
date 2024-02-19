@@ -1,4 +1,4 @@
-﻿/**
+/**
 Software License Agreement (BSD)
 
 \file      WindowsSocket.cpp
@@ -201,12 +201,6 @@ private:
 WindowsSocket::WindowsSocket ()
 {
   impl = new WindowsSocketImpl ();
-}
-
-WindowsSocket::~WindowsSocket()
-{
-    if (impl)
-        delete impl;
 }
 
 void WindowsSocket::init (char *server_hostname)

@@ -1,4 +1,4 @@
-﻿#include "MainLayer.h"
+#include "MainLayer.h"
 #include "Utils.h"
 
 bool show_video_layout = true;

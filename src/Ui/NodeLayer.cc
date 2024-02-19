@@ -1,5 +1,7 @@
-﻿#include "NodeLayer.h"
+#include "NodeLayer.h"
 #include "TransForm.h"
+#include <string>
+#include <iostream>
 
 extern bool show_node_settings_layout;
 extern bool show_tool_log;
@@ -253,10 +255,11 @@ void NodeLayer::NavShowPlan()
 
 	if (m_current_plan >= m_make_plan_num - 1)
 		return;
+
 	std::vector<std::string> goalNameList;
-	std::map<int, manager_msgs::Plan> goalList = m_PlanManager->GetPlanList().find(m_current_plan + 1)->second.GetGoalList();
-	for (auto& goal : goalList) {
-		goalNameList.push_back("goal_" + std::to_string(goal.second.id));
+	std::map<int, std::string> goalList = m_PlanManager->GetPlanList().find(m_current_plan + 1)->second.GetGoalNameList();
+	for (auto& goalname : goalList) {
+		goalNameList.push_back(goalname.second);
 	}
 	std::vector<const char*> goalNamesArray;
 	for (const auto& str : goalNameList) {
@@ -399,20 +402,37 @@ void NodeLayer::MakePlan()
 	else
 		ImGui::TextColored(ImVec4(0.0f, 0.9f, 0.0f, 1.0f), moveInfo.c_str());
 
-	static char temp[128];
-	sprintf(temp, "plan_%d", m_make_plan_num);
-	ImGui::InputTextWithHint(u8"路线名", "input plan name here", temp, IM_ARRAYSIZE(temp));
+	static char temp_name[128];
+	sprintf(temp_name, "plan_%d", m_make_plan_num);
+	ImGui::InputTextWithHint(u8"路线编号", "input plan name here", temp_name, IM_ARRAYSIZE(temp_name));
+
+	static char temp_show_name[128];
+	ImGui::InputTextWithHint(u8"路线名", "input plan name here", temp_show_name, IM_ARRAYSIZE(temp_show_name));
 
 	const char* goal_type_items[] = { "STOP", "PAUSE", "MOVE", "ACTION" };
 	static int goal_type = 2;
 	ImGui::Combo(u8"目标点类型", &goal_type, goal_type_items, IM_ARRAYSIZE(goal_type_items));
 
-	const char* action_id_items[] = { "NULL", u8"ACTION1", u8"ACTION2", u8"ACTION3" };
+	const char* action_id_items[] = { "NULL", u8"OIL1", u8"OIL2", u8"OIL3", u8"OIL4", u8"OIL5", u8"OIL6"};
 	static int action_id = 0;
 	ImGui::Combo("ACTION_ID", &action_id, action_id_items, IM_ARRAYSIZE(action_id_items));
+	
+	static char temp_goal_name[128];
+	ImGui::InputTextWithHint(u8"目标点名称", u8"input plan name here", temp_goal_name, IM_ARRAYSIZE(temp_goal_name));
 
+	static char needle_capacity[128];
+	static char alignment_offset[128];
+	
+	if (action_id >= 1 && action_id <= 6) {
+		ImGui::InputTextWithHint(u8"针管容量", u8"input needle capacity (ml)", needle_capacity, IM_ARRAYSIZE(needle_capacity));
+		ImGui::InputTextWithHint(u8"对准偏移", u8"input alignment offset (mm)", alignment_offset, IM_ARRAYSIZE(alignment_offset));
+	}
 
-	std::string plan_name = temp;
+	std::string plan_name = temp_name;
+	std::string plan_name_show = temp_show_name;
+	std::string goal_name = temp_goal_name;
+
+	
 	if (ImGui::Button(u8"添加goal", ImVec2(110, 30))) {
 		manager_msgs::Plan goal;
 		goal.pose.position.x = m_pose.pose.pose.position.x;
@@ -421,9 +441,12 @@ void NodeLayer::MakePlan()
 		goal.pose.orientation.z = m_pose.pose.pose.orientation.z;
 		goal.pose.orientation.w = m_pose.pose.pose.orientation.w;
 		goal.type.status = goal_type;
-		goal.action_id = action_id;
 		goal.id = m_make_goal_num;
-		m_make_plan->Addgoal(goal);
+		goal.action_id = action_id;
+		goal.needle_capacity = atoi(needle_capacity);
+		goal.alignment_offset = atoi(alignment_offset);
+
+		m_make_plan->Addgoal(goal, goal_name);
 		m_make_goal_num++;
 	}
 	ImGui::SameLine(0, 20);
@@ -439,6 +462,7 @@ void NodeLayer::MakePlan()
 	ImGui::NewLine();
 	if (ImGui::Button(u8"添加Plan", ImVec2(110, 30)) && m_make_goal_num > 1) {
 		m_make_plan->SetName(plan_name);
+		m_make_plan->SetShowName(plan_name_show);
 		m_PlanManager->AddPlan(*m_make_plan);
 		m_make_plan->Clear();
 		m_make_goal_num = 1;

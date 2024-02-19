@@ -1,6 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.10)
 project(RosView)
 
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 add_subdirectory(thirdparty/glfw)
 add_subdirectory(thirdparty/glm)
 

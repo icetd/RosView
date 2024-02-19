@@ -33,25 +33,16 @@ namespace controller_manager_msgs
       offset += this->header.serialize(outbuffer + offset);
       *(outbuffer + offset + 0) = (this->controller_length >> (8 * 0)) & 0xFF;
       *(outbuffer + offset + 1) = (this->controller_length >> (8 * 1)) & 0xFF;
-      
-      
       *(outbuffer + offset + 2) = (this->controller_length >> (8 * 2)) & 0xFF;
-      
-      
       *(outbuffer + offset + 3) = (this->controller_length >> (8 * 3)) & 0xFF;
-      
-      
       offset += sizeof(this->controller_length);
       for( uint32_t i = 0; i < controller_length; i++){
-        
       offset += this->controller[i].serialize(outbuffer + offset);
-      
       }
       return offset;
     }
 
     virtual int deserialize(unsigned char *inbuffer) override
-    
     {
       int offset = 0;
       offset += this->header.deserialize(inbuffer + offset);
