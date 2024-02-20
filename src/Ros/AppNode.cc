@@ -148,7 +148,7 @@ void AppNode::pubPlan(manager_msgs::Plan& plan_goal)
 	plan_msg = plan_goal;
 	m_plan_pub->publish(&plan_msg);
 
-	Sleep(100);
+	Sleep(200);
 	nh->spinOnce();
 }
 
@@ -157,7 +157,7 @@ void AppNode::pubCmdPlan(manager_msgs::Status& plan_cmd)
 	cmd_plan_msg = plan_cmd;
 	m_cmd_plan_pub->publish(&cmd_plan_msg);
 
-	Sleep(100);
+	Sleep(200);
 	nh->spinOnce();
 }
 

@@ -243,7 +243,7 @@ void NodeLayer::NavShowPlan()
 	std::map<int, NavPlan> planList = m_PlanManager->GetPlanList();
 	m_make_plan_num = planList.size() + 1;
 	for (auto& plan : planList) {
-		planNameList.push_back(plan.second.GetName());
+		planNameList.push_back(plan.second.GetShowName());
 	}
 	std::vector<const char*> planNamesArray;
 	for (const auto& str : planNameList) {
@@ -269,7 +269,7 @@ void NodeLayer::NavShowPlan()
 	static int item_current_idx = 0;
 	if (ImGui::BeginListBox(u8"目标点")) {
 		for (int n = 0; n < static_cast<int>(goalNamesArray.size()); n++) {
-			if (n == m_current_goal) {
+			if (n <= m_current_goal) {
 				ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", goalNamesArray[n]);
 			}
 			else {
@@ -345,6 +345,15 @@ void NodeLayer::OnRenderMake()
 
 void NodeLayer::MakePlan()
 {
+
+	static char text[128] = {}; // 设置输入框默认参数
+	ImGui::Text(u8"制作路线请输入密码:");
+	ImGui::SameLine(0, 20);
+	ImGui::InputText("",text, IM_ARRAYSIZE(text), ImGuiInputTextFlags_Password, 0, text);
+	if (strcmp((char*)text, "DeepCloud123") != 0)
+		return;
+
+	ImGui::NewLine();
 	ImGui::SeparatorText(u8"制作路线");
 	ImGui::Text(u8"手动控制:");
 	ImGuiKey start_key = (ImGuiKey)0;
@@ -450,14 +459,14 @@ void NodeLayer::MakePlan()
 	ImGui::SameLine(0, 20);
 	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "goal_%d", m_make_goal_num);
 
+	ImGui::SameLine(0, 20);
 	if (ImGui::Button(u8"删除goal", ImVec2(110, 30)) && m_make_goal_num > 1) {
 		m_make_goal_num--;
 		m_make_plan->Deletegoal(m_make_goal_num);
 	}
 	ImGui::SameLine(0, 20);
 	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "goal_%d", m_make_goal_num - 1);
-
-	ImGui::NewLine();
+	
 	if (ImGui::Button(u8"添加Plan", ImVec2(110, 30)) && m_make_goal_num > 1) {
 		m_make_plan->SetName(plan_name);
 		m_make_plan->SetShowName(plan_name_show);
@@ -469,6 +478,7 @@ void NodeLayer::MakePlan()
 	ImGui::SameLine(0, 20);
 	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "plan_%d", m_make_plan_num);
 
+	ImGui::SameLine(0, 20);
 	if (ImGui::Button(u8"删除Plan", ImVec2(110, 30)) && m_make_plan_num > 1) {
 		m_make_plan_num--;
 		m_PlanManager->DeletePlan(m_make_plan_num);
@@ -477,7 +487,7 @@ void NodeLayer::MakePlan()
 	}
 	ImGui::SameLine(0, 20);
 	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "plan_%d", m_make_plan_num - 1);
-
+	
 	ImGui::NewLine();
 	if (ImGui::Button(u8"提交路线到数据库", ImVec2(110, 30)) && m_make_plan_num > 1) {
 		m_PlanManager->pushPlans();
