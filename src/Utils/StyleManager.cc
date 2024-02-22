@@ -164,6 +164,25 @@ void StyleManager::SelectTheme(MStyle_t p_style)
 
     else if (p_style == MStyle_t::HAZEL_DARK) 
     {
+        style->WindowPadding = ImVec2(15, 15);
+        style->WindowRounding = 0.0f;
+        style->FramePadding = ImVec2(5, 5);
+        style->FrameRounding = 0.0f;
+        style->ItemSpacing = ImVec2(12, 8);
+        style->ItemInnerSpacing = ImVec2(8, 6);
+        style->IndentSpacing = 25.0f;
+        style->ScrollbarSize = 15.0f;
+        style->ScrollbarRounding = 0.0f;
+        style->GrabMinSize = 5.0f;
+        style->GrabRounding = 0.0f;
+        style->TabRounding = 0.0f;
+        style->ChildRounding = 0.0f;
+        style->PopupRounding = 0.0f;
+
+        style->WindowBorderSize = 1.0f;
+        style->FrameBorderSize = 0.0f;
+        style->PopupBorderSize = 1.0f;
+
         // Headers
 		style->Colors[ImGuiCol_Header] = ImVec4(0.20f, 0.25f, 0.29f, 0.55f);
 		style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
@@ -226,28 +245,23 @@ void StyleManager::SelectTheme(MStyle_t p_style)
 
     else if (p_style == MStyle_t::DARKNESS)
     {
-        style->WindowPadding = ImVec2(8.00f, 8.00f);
-        style->FramePadding = ImVec2(5.00f, 2.00f);
-        style->CellPadding = ImVec2(6.00f, 6.00f);
-        style->ItemSpacing = ImVec2(6.00f, 6.00f);
-        style->ItemInnerSpacing = ImVec2(6.00f, 6.00f);
-        style->TouchExtraPadding = ImVec2(0.00f, 0.00f);
-        style->IndentSpacing = 25;
-        style->ScrollbarSize = 15;
-        style->GrabMinSize = 10;
-        style->WindowBorderSize = 1;
-        style->ChildBorderSize = 1;
-        style->PopupBorderSize = 1;
-        style->FrameBorderSize = 1;
-        style->TabBorderSize = 1;
-        style->WindowRounding = 7;
-        style->ChildRounding = 4;
-        style->FrameRounding = 3;
-        style->PopupRounding = 4;
-        style->ScrollbarRounding = 9;
-        style->GrabRounding = 3;
-        style->LogSliderDeadzone = 4;
-        style->TabRounding = 4;
+        style->WindowPadding = ImVec2(15, 15);
+        style->WindowRounding = 0.0f;
+        style->FramePadding = ImVec2(5, 5);
+        style->FrameRounding = 0.0f;
+        style->ItemSpacing = ImVec2(12, 8);
+        style->ItemInnerSpacing = ImVec2(8, 6);
+        style->IndentSpacing = 25.0f;
+        style->ScrollbarSize = 15.0f;
+        style->ScrollbarRounding = 0.0f;
+        style->GrabMinSize = 5.0f;
+        style->GrabRounding = 0.0f;
+        style->TabRounding = 0.0f;
+        style->ChildRounding = 0.0f;
+        style->PopupRounding = 0.0f;
+        style->WindowBorderSize = 1.0f;
+        style->FrameBorderSize = 0.0f;
+        style->PopupBorderSize = 1.0f;
         
         style->Colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
         style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -308,13 +322,24 @@ void StyleManager::SelectTheme(MStyle_t p_style)
 
     else if (p_style == MStyle_t::DRACULA)
     {
-        style->TabRounding = 4;
-        style->ScrollbarRounding = 9;
-        style->WindowRounding = 7;
-        style->GrabRounding = 3;
-        style->FrameRounding = 3;
-        style->PopupRounding = 4;
-        style->ChildRounding = 4;
+        style->WindowPadding = ImVec2(15, 15);
+        style->WindowRounding = 0.0f;
+        style->FramePadding = ImVec2(5, 5);
+        style->FrameRounding = 0.0f;
+        style->ItemSpacing = ImVec2(12, 8);
+        style->ItemInnerSpacing = ImVec2(8, 6);
+        style->IndentSpacing = 25.0f;
+        style->ScrollbarSize = 15.0f;
+        style->ScrollbarRounding = 0.0f;
+        style->GrabMinSize = 5.0f;
+        style->GrabRounding = 0.0f;
+        style->TabRounding = 0.0f;
+        style->ChildRounding = 0.0f;
+        style->PopupRounding = 0.0f;
+
+        style->WindowBorderSize = 1.0f;
+        style->FrameBorderSize = 0.0f;
+        style->PopupBorderSize = 1.0f;
 
         style->Colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.1f, 0.13f, 1.0f};
         style->Colors[ImGuiCol_MenuBarBg] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
