@@ -62,7 +62,7 @@ private:
 	void OnRenderNav();
 	void NavShowPlan();
 
-	void NavMessage();
+	void OnNavMessage();
 
 	/*Ros Mav Make Plan View*/
 

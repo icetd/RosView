@@ -7,6 +7,7 @@
 #include <imgui_internal.h>
 #include <glm/glm.hpp>
 #include "Application.h"
+#include "StyleManager.h"
 #include "log.h"
 
 static Application *Instance = nullptr;
@@ -78,7 +79,7 @@ void Application::Init()
     // fonts set
 	io.Fonts->AddFontFromFileTTF("../res/fonts/YaHei.ttf", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
 
-	ImGui::StyleColorsDark();
+	StyleManager::SelectTheme(StyleManager::MStyle_t::HAZEL_DARK);
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

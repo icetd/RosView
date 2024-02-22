@@ -132,6 +132,21 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 			ImGui::PopItemWidth();
 			ImGui::End();
 		}
+
+		// add nav message view
+		{
+			if (!(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize))
+				ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetFontSize() * 12.0f), ImGuiCond_FirstUseEver);
+
+			ImGui::Begin(u8"消息");
+			ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
+			ImGui::AlignTextToFramePadding();
+
+			OnNavMessage();
+
+			ImGui::PopItemWidth();
+			ImGui::End();
+		}
 	}
 }
 
@@ -254,14 +269,11 @@ void NodeLayer::OnRenderNav()
 	if (!isCliented)
 		return;
 	NavShowPlan();
-	NavMessage();
 }
 
 void NodeLayer::NavShowPlan()
 {
 	ImGui::SeparatorText(u8"线路选择");
-	ImGui::NewLine();
-
 	// 尝试将c_str() 返回的指针添加到 std::vector<const char*> 中，
 	// 但这可能导致问题。c_str() 返回的指针是指向字符串内部缓冲区的指针，而这个缓冲区是临时的，当 GetName() 的结果超出作用域时就会被销毁，从而导致 planNameList 中的指针成为悬空指针。
 	// 将字符串复制到 std::vector<std::string> 中，然后使用 std::vector<const char*> 作为 ImGui Combo 的参数。这样可以确保字符串的生命周期足够长，避免悬空指针的问题。
@@ -280,8 +292,6 @@ void NodeLayer::NavShowPlan()
 		planNamesArray.push_back(str.c_str());
 	}
 	ImGui::Combo(u8"线路选择", &m_current_plan, planNamesArray.data(), static_cast<int>(planNamesArray.size()));
-
-	ImGui::NewLine();
 
 	if (m_current_plan >= m_make_plan_num - 1)
 		return;
@@ -308,7 +318,6 @@ void NodeLayer::NavShowPlan()
 		}
 		ImGui::EndListBox();
 	}
-	ImGui::NewLine();
 	ImGui::RadioButton(u8"显示轨迹", &m_isShowTrajectory, 1); ImGui::SameLine(0, 20);
 	ImGui::RadioButton(u8"不显示轨迹", &m_isShowTrajectory, 0); ImGui::SameLine(0, 20);
 	if (ImGui::Button(u8"清空轨迹", ImVec2(80, 22))) {
@@ -351,13 +360,17 @@ void NodeLayer::NavShowPlan()
 		m_AppNode->pubCmdPlan(status);
 	}
 
-
+	HelpMarker(u8"1.选择路线后，可以在目标点以及左侧视窗中查看具体目标点。\n"
+			   "2.目标点中按顺序列出了所有当前线路途经的目标，机器人导航过程中最近途经的目标点高亮显示。\n"
+			   "3.点击发布路线，可以将当前路线发布给机器。\n"
+			   "4.点击开始执行，当前发布的线路被激活，机器人开始执行计划路线。\n"
+			   "5.点击暂停导航，机器人暂停当前路线。\n"
+			   "6.点击继续导航，机器人继续当前路线。\n"
+			   "7.最后一个目标点高亮时表示当前路线执行完毕。");
 }
 
-void NodeLayer::NavMessage()
+void NodeLayer::OnNavMessage()
 {
-	ImGui::NewLine();
-	ImGui::SeparatorText(u8"消息");
 	ImGui::Text(u8"当前位置:"); ImGui::SameLine(0, 20);
 	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "X: %.4fm", m_realrobotPos.x); ImGui::SameLine(0, 20);
 	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Y: %.4fm", m_realrobotPos.y); ImGui::SameLine(0, 20);
@@ -365,14 +378,6 @@ void NodeLayer::NavMessage()
 
 	ImGui::Text(u8"执行消息"); ImGui::SameLine(0, 20);
 	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_plan_back_msg.c_str());
-
-	HelpMarker(u8"1.选择路线后，可以在目标点以及左侧视窗中查看具体目标点。\n" \
-		"2.目标点中按顺序列出了所有当前线路途经的目标，机器人导航过程中最近途经的目标点高亮显示。\n" \
-		"3.点击发布路线，可以将当前路线发布给机器。\n" \
-		"4.点击开始执行，当前发布的线路被激活，机器人开始执行计划路线。\n" \
-		"5.点击暂停导航，机器人暂停当前路线。\n" \
-		"6.点击继续导航，机器人继续当前路线。\n" \
-		"7.最后一个目标点高亮时表示当前路线执行完毕。");
 }
 
 void NodeLayer::OnRenderMake()

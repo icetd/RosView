@@ -41,6 +41,7 @@ include_directories(
 	${INCLUDE_DIR}/Graphics
 	${INCLUDE_DIR}/Plan
 	${INCLUDE_DIR}/Ui
+	${INCLUDE_DIR}/Utils
 	${INCLUDE_DIR}/Ros
 	${GLFW_INC}
 	${GLAD_INC}

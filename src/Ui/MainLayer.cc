@@ -1,5 +1,6 @@
 #include "MainLayer.h"
 #include "Utils.h"
+#include "StyleManager.h"
 
 bool show_video_layout = true;
 bool show_node_settings_layout = true;
@@ -86,7 +87,7 @@ void MainLayer::OnUpdate(float ts)
 
 		if (ImGui::BeginMenu(u8"工具"))
 		{
-			ImGui::ShowStyleSelector(u8"选择主题");
+			StyleManager::ShowStyleSelector(u8"选择主题");
 			ImGui::MenuItem(u8"日志", NULL, &show_tool_log);
 			ImGui::EndMenu();
 		}
