@@ -88,7 +88,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread3->SetUrl((char *)m_url3.c_str());
 
 		static int radio_video3 = 0;
-		ImGui::RadioButton(u8"打开 video3", &radio_video3, 1); ImGui::SameLine(0, 0);
+		ImGui::RadioButton(u8"打开 video3", &radio_video3, 1); ImGui::SameLine(0, 10);
 		ImGui::RadioButton(u8"关闭 video3", &radio_video3, 0); ImGui::SameLine(0, 20);
 
 		if (m_VideoThread3->GetCaptureStatus()) {
