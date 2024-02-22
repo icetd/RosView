@@ -8,6 +8,7 @@
 #include "Texuture.h"
 #include "PlanManager.h"
 #include "Utils.h"
+#include "INIReader.h"
 
 
 class NodeLayer : public Layer
@@ -18,7 +19,7 @@ protected:
 	virtual void OnDetach() override;
 
 private:
-	char m_master_url[128] = "192.168.2.162:11411";
+	std::string m_master_url;
 	AppNode* m_AppNode = nullptr;
 	bool isCliented;
 
@@ -72,6 +73,7 @@ private:
 	void OnRenderMake();
 	void MakePlan();
 
+	INIReader *m_config;
 };
 
 #endif

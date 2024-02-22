@@ -47,7 +47,7 @@ int NavPlan::pushPlan()
 	std::string sql;
 	char temp[512];
 	memset(temp, 0, 512);
-	int re = m_plan.OpenDb("../res/db/navDataBase.db");
+	int re = m_plan.OpenDb("./res/db/navDataBase.db");
 	if (re != SQLITE_OK)
 		return 0;
 

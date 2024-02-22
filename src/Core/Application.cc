@@ -52,7 +52,7 @@ void Application::Init()
     icon.width = 860;
     icon.height = 940;
     int channels = 4;
-    icon.pixels = stbi_load("../res/textures/robot.png", &icon.width, &icon.height, &channels, 4);
+    icon.pixels = stbi_load("./res/textures/robot.png", &icon.width, &icon.height, &channels, 4);
     glfwSetWindowIcon(m_WindowHandler, 1, &icon);
 	stbi_image_free(icon.pixels);
 
@@ -80,7 +80,7 @@ void Application::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 	
     // fonts set
-	io.Fonts->AddFontFromFileTTF("../res/fonts/YaHei.ttf", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
+	io.Fonts->AddFontFromFileTTF("./res/fonts/YaHei.ttf", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
 
 	StyleManager::SelectTheme(StyleManager::MStyle_t::HAZEL_DARK);
 

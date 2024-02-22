@@ -14,10 +14,10 @@ void NodeLayer::OnAttach()
 	m_isShowTrajectory = false;
 
 	m_Texture_Map = std::make_unique<Texture>();
-	m_Texture_Map->bind("../res/textures/nav.pgm");
+	m_Texture_Map->bind("./res/textures/nav.pgm");
 
 	m_Texture_Robot = std::make_unique<Texture>();
-	m_Texture_Robot->bind("../res/textures/nav.png");
+	m_Texture_Robot->bind("./res/textures/nav.png");
 
 	m_PlanManager = std::make_unique<PlanManager>();
 	m_PlanManager->pullPlans();
@@ -29,6 +29,10 @@ void NodeLayer::OnAttach()
 	m_make_plan_num = 1;
 
 	isCliented = false;
+
+	m_config = new INIReader("./configs/url.ini");
+	m_master_url = m_config->Get("ROS", "URL_MASTER", "192.168.2.162:11411");
+
 	m_AppNode = AppNode::GetInstance();
 	m_AppNode->setOnAmclPoseCallback(std::bind(&NodeLayer::OnAmclPoseCallback, this, std::placeholders::_1));
 	m_AppNode->setOnMapMetaCallback(std::bind(&NodeLayer::OnMapMeatCallback, this, std::placeholders::_1));
@@ -78,13 +82,13 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 		ImGui::AlignTextToFramePadding();
 
 		ImGui::SeparatorText(u8"连接");
-		ImGui::InputTextWithHint("URL", "set master url here", m_master_url, IM_ARRAYSIZE(m_master_url));
+		ImGui::InputTextWithHint("URL", "set master url here", (char *)m_master_url.c_str(), strlen(m_master_url.c_str()) + 1);
 		static int radio_master = 0;
 		ImGui::RadioButton(u8"连接机器人", &radio_master, 1); ImGui::SameLine(0, 20);
 		ImGui::RadioButton(u8"断开机器人", &radio_master, 0); ImGui::SameLine(0, 20);
 
 		if (radio_master) {
-			m_AppNode->init(m_master_url);
+			m_AppNode->init((char *)m_master_url.c_str());
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
 			isCliented = true;
 		}

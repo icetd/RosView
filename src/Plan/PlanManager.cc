@@ -48,7 +48,7 @@ int PlanManager::pushClearAll()
 	std::string sql;
 	char temp[256];
 
-	int re = m_plans.OpenDb("../res/db/navDataBase.db");
+	int re = m_plans.OpenDb("./res/db/navDataBase.db");
 	if (re == SQLITE_OK) {
 		for (auto iter = m_planList.begin(); iter != m_planList.end(); ++iter) {
 
@@ -78,7 +78,7 @@ int PlanManager::pushPlans()
 	std::string sql;
 	char temp[256];
 
-	int re = m_plans.OpenDb("../res/db/navDataBase.db");
+	int re = m_plans.OpenDb("./res/db/navDataBase.db");
 	if (re == SQLITE_OK) {
 		for (auto iter = m_planList.begin(); iter != m_planList.end(); ++iter) {
 			sprintf(temp, "insert into nav_plans(id, plan_id, plan_name, plan_show_name) values('%d', '%d', '%s', '%s')",
@@ -102,7 +102,7 @@ int PlanManager::pullPlans()
 	arrKey.clear();
 	arrValue.clear();
 
-	int re = m_plans.OpenDb("../res/db/navDataBase.db");
+	int re = m_plans.OpenDb("./res/db/navDataBase.db");
 	if (re == SQLITE_OK) {
 		sprintf(temp, "select * from nav_plans");
 		sql = temp;

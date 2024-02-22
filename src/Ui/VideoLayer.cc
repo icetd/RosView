@@ -25,6 +25,11 @@ void VideoLayer::OnAttach()
 	m_VideoThread3->SetOnRenderDataCallback(std::bind(&VideoLayer::OnRenderData3, this, std::placeholders::_1));
 	m_VideoThread3->start();
 	m_dataBufferList3.clear();
+
+	m_config = new INIReader("./configs/url.ini");
+	m_url1 = m_config->Get("VIDEO", "URL_VIDEO1", "rtsp://192.168.2.113:8554/unicast");
+	m_url2 = m_config->Get("VIDEO", "URL_VIDEO2", "rtsp://192.168.2.113:8554/unicast");
+	m_url3 = m_config->Get("VIDEO", "URL_VIDEO3", "rtsp://192.168.2.113:8554/unicast");
 }
 
 void VideoLayer::OnUpdate(float ts)
@@ -48,8 +53,8 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
 		ImGui::AlignTextToFramePadding();
 
-		ImGui::InputTextWithHint("video1", "set rtsp url here", m_url1, IM_ARRAYSIZE(m_url1));
-		m_VideoThread1->SetUrl(m_url1);
+		ImGui::InputTextWithHint("video1", "set rtsp url here", (char *)m_url1.c_str(), strlen(m_url1.c_str()) + 1);
+		m_VideoThread1->SetUrl((char *)m_url1.c_str());
 		static int radio_video1 = 0;
 		ImGui::RadioButton(u8"打开 video1", &radio_video1, 1); ImGui::SameLine(0, 0);
 		ImGui::RadioButton(u8"关闭 video1", &radio_video1, 0); ImGui::SameLine(0, 20);
@@ -63,8 +68,8 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread1->SetStartStatus((int)radio_video1);
 
 		ImGui::NewLine();
-		ImGui::InputTextWithHint("video2", "set rtsp url here", m_url2, IM_ARRAYSIZE(m_url2));
-		m_VideoThread2->SetUrl(m_url2);
+		ImGui::InputTextWithHint("video2", "set rtsp url here", (char *)m_url2.c_str(), strlen(m_url1.c_str()) + 1);
+		m_VideoThread2->SetUrl((char *)m_url2.c_str());
 
 		static int radio_video2 = 0;
 		ImGui::RadioButton(u8"打开 video2", &radio_video2, 1); ImGui::SameLine(0, 0);
@@ -79,8 +84,8 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread2->SetStartStatus((int)radio_video2);
 
 		ImGui::NewLine();
-		ImGui::InputTextWithHint("video3", "set rtsp url here", m_url3, IM_ARRAYSIZE(m_url3));
-		m_VideoThread3->SetUrl(m_url3);
+		ImGui::InputTextWithHint("video3", "set rtsp url here", (char *)m_url3.c_str(), strlen(m_url3.c_str()) + 1);
+		m_VideoThread3->SetUrl((char *)m_url3.c_str());
 
 		static int radio_video3 = 0;
 		ImGui::RadioButton(u8"打开 video3", &radio_video3, 1); ImGui::SameLine(0, 0);
