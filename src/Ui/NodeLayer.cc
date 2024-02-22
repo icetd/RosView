@@ -82,7 +82,7 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 		ImGui::AlignTextToFramePadding();
 
 		ImGui::SeparatorText(u8"连接");
-		ImGui::InputTextWithHint("URL", "set master url here", (char *)m_master_url.c_str(), strlen(m_master_url.c_str()) + 1);
+		ImGui::Text(u8"\t\t机器人地址:\t%s", m_master_url.c_str());
 		static int radio_master = 0;
 		ImGui::RadioButton(u8"连接机器人", &radio_master, 1); ImGui::SameLine(0, 20);
 		ImGui::RadioButton(u8"断开机器人", &radio_master, 0); ImGui::SameLine(0, 20);

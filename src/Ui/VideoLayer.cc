@@ -53,7 +53,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
 		ImGui::AlignTextToFramePadding();
 
-		ImGui::InputTextWithHint("video1", "set rtsp url here", (char *)m_url1.c_str(), strlen(m_url1.c_str()) + 1);
+		ImGui::Text("\t\t%s", m_url1.c_str());
 		m_VideoThread1->SetUrl((char *)m_url1.c_str());
 		static int radio_video1 = 0;
 		ImGui::RadioButton(u8"打开 video1", &radio_video1, 1); ImGui::SameLine(0, 10);
@@ -68,7 +68,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread1->SetStartStatus((int)radio_video1);
 
 		ImGui::NewLine();
-		ImGui::InputTextWithHint("video2", "set rtsp url here", (char *)m_url2.c_str(), strlen(m_url1.c_str()) + 1);
+		ImGui::Text("\t\t%s", m_url2.c_str());
 		m_VideoThread2->SetUrl((char *)m_url2.c_str());
 
 		static int radio_video2 = 0;
@@ -84,7 +84,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread2->SetStartStatus((int)radio_video2);
 
 		ImGui::NewLine();
-		ImGui::InputTextWithHint("video3", "set rtsp url here", (char *)m_url3.c_str(), strlen(m_url3.c_str()) + 1);
+		ImGui::Text("\t\t%s", m_url3.c_str());
 		m_VideoThread3->SetUrl((char *)m_url3.c_str());
 
 		static int radio_video3 = 0;
