@@ -56,7 +56,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::InputTextWithHint("video1", "set rtsp url here", (char *)m_url1.c_str(), strlen(m_url1.c_str()) + 1);
 		m_VideoThread1->SetUrl((char *)m_url1.c_str());
 		static int radio_video1 = 0;
-		ImGui::RadioButton(u8"打开 video1", &radio_video1, 1); ImGui::SameLine(0, 0);
+		ImGui::RadioButton(u8"打开 video1", &radio_video1, 1); ImGui::SameLine(0, 10);
 		ImGui::RadioButton(u8"关闭 video1", &radio_video1, 0); ImGui::SameLine(0, 20);
 
 		if (m_VideoThread1->GetCaptureStatus()) {
@@ -72,7 +72,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread2->SetUrl((char *)m_url2.c_str());
 
 		static int radio_video2 = 0;
-		ImGui::RadioButton(u8"打开 video2", &radio_video2, 1); ImGui::SameLine(0, 0);
+		ImGui::RadioButton(u8"打开 video2", &radio_video2, 1); ImGui::SameLine(0, 10);
 		ImGui::RadioButton(u8"关闭 video2", &radio_video2, 0); ImGui::SameLine(0, 20);
 
 		if (m_VideoThread2->GetCaptureStatus()) {
