@@ -9,7 +9,8 @@ public:
         LIGHT_STYLE,
         ALTERNATIVE_DARK,
         CINDER,
-        HAZEL_DARK
+        HAZEL_DARK,
+        DARKNESS,
     } MStyle_t;
 
     static bool ShowStyleSelector(const char* label);
