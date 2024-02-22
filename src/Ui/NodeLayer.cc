@@ -243,7 +243,7 @@ void NodeLayer::ViewTrajectory()
 		realGoalPosy = curpose.pose.pose.position.y;
 		showPoint.x = m_viewStartPos.x + (realGoalPosx - originPosx) / resolution * m_viewportSize.x / map_width;
 		showPoint.y = m_viewStartPos.y + m_viewportSize.y - (realGoalPosy - originPosy) / resolution * m_viewportSize.y / map_height;
-		ImGui::GetWindowDrawList()->AddCircleFilled(showPoint, 2.0f, IM_COL32(10, 150, 200, 155));
+		ImGui::GetWindowDrawList()->AddCircleFilled(showPoint, 2.0f, IM_COL32(255, 0, 0, 50));
 	}
 
 	ImGui::EndChild();
@@ -311,7 +311,7 @@ void NodeLayer::NavShowPlan()
 	ImGui::NewLine();
 	ImGui::RadioButton(u8"显示轨迹", &m_isShowTrajectory, 1); ImGui::SameLine(0, 20);
 	ImGui::RadioButton(u8"不显示轨迹", &m_isShowTrajectory, 0); ImGui::SameLine(0, 20);
-	if (ImGui::Button(u8"清空轨迹", ImVec2(80, 20))) {
+	if (ImGui::Button(u8"清空轨迹", ImVec2(80, 22))) {
 		m_pose_list.clear();
 	}
 	ImGui::NewLine();

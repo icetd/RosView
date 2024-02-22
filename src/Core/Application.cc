@@ -78,7 +78,7 @@ void Application::Init()
     // fonts set
 	io.Fonts->AddFontFromFileTTF("../res/fonts/YaHei.ttf", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
 
-	ImGui::StyleColorsClassic();
+	ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
