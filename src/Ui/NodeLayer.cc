@@ -10,6 +10,9 @@ void NodeLayer::OnAttach()
 {
 	m_realrobotPos = { 0.0f, 0.0f };
 	m_robotAngle = 0.0f;
+	m_pose_list.resize(5000);
+	m_isShowTrajectory = false;
+
 	m_Texture_Map = std::make_unique<Texture>();
 	m_Texture_Map->bind("../res/textures/nav.pgm");
 
@@ -142,6 +145,8 @@ void NodeLayer::OnRenderView()
 	ViewMap();
 	ViewRobot();
 	ViewPlanPoint();
+	if (m_isShowTrajectory)
+		ViewTrajectory();
 }
 
 void NodeLayer::ViewMap()
@@ -213,9 +218,34 @@ void NodeLayer::ViewPlanPoint()
 			ImGui::GetWindowDrawList()->AddLine(GoalPos[i], GoalPos[!i], IM_COL32(0, 255, 255, 100), 2.0f);
 
 		ImGui::GetWindowDrawList()->AddText(GoalPos[i], IM_COL32(128, 0, 255, 255), std::to_string(plan.second.id).c_str());
-		ImGui::GetWindowDrawList()->AddCircleFilled(GoalPos[i], 3.0f, IM_COL32(72, 181, 33, 255));
+		ImGui::GetWindowDrawList()->AddCircleFilled(GoalPos[i], 3.0f, IM_COL32(33, 181, 33, 255));
 		i = !i;
 	}
+	ImGui::EndChild();
+}
+
+void NodeLayer::ViewTrajectory()
+{
+	ImGui::BeginChild("Map");
+	float resolution = m_mapMetaData.resolution;
+	double map_width = m_mapMetaData.width;
+	double map_height = m_mapMetaData.height;
+
+	double originPosx = m_mapMetaData.origin.position.x;    // 左下角原点在 map坐标系中的坐标
+	double originPosy = m_mapMetaData.origin.position.y;    // Textue 加载时上下颠倒
+
+	double realGoalPosx;
+	double realGoalPosy;
+	ImVec2 showPoint;
+
+	for (auto& curpose : m_pose_list) {
+		realGoalPosx = curpose.pose.pose.position.x;
+		realGoalPosy = curpose.pose.pose.position.y;
+		showPoint.x = m_viewStartPos.x + (realGoalPosx - originPosx) / resolution * m_viewportSize.x / map_width;
+		showPoint.y = m_viewStartPos.y + m_viewportSize.y - (realGoalPosy - originPosy) / resolution * m_viewportSize.y / map_height;
+		ImGui::GetWindowDrawList()->AddCircleFilled(showPoint, 2.0f, IM_COL32(10, 150, 200, 155));
+	}
+
 	ImGui::EndChild();
 }
 
@@ -279,12 +309,17 @@ void NodeLayer::NavShowPlan()
 		ImGui::EndListBox();
 	}
 	ImGui::NewLine();
+	ImGui::RadioButton(u8"显示轨迹", &m_isShowTrajectory, 1); ImGui::SameLine(0, 20);
+	ImGui::RadioButton(u8"不显示轨迹", &m_isShowTrajectory, 0);
+	ImGui::NewLine();
+	
 	if (ImGui::Button(u8"发布路线", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
 
 		manager_msgs::Status status;
 		status.status = status.DELETEALL;
 		m_AppNode->pubCmdPlan(status);
 		m_current_goal = -1;
+		m_pose_list.clear();
 
 		for (auto& plan : m_PlanManager->GetPlanList().at(m_current_plan + 1).GetGoalList()) {
 			m_AppNode->pubPlan(plan.second);
@@ -294,6 +329,7 @@ void NodeLayer::NavShowPlan()
 	ImGui::SameLine(0, 10);
 	if (ImGui::Button(u8"开始执行", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
 		m_current_goal = -1;
+		m_pose_list.clear();
 		manager_msgs::Status status;
 		status.status = status.START;
 		m_AppNode->pubCmdPlan(status);
@@ -528,6 +564,11 @@ void NodeLayer::MakePlan()
 
 void NodeLayer::OnAmclPoseCallback(const geometry_msgs::PoseWithCovarianceStamped& pose)
 {
+
+	if (m_pose.pose.pose.position.x != pose.pose.pose.position.x && 
+		m_pose.pose.pose.position.y != pose.pose.pose.position.y)
+		m_pose_list.push_back(pose);
+
 	m_pose = pose;
 }
 

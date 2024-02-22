@@ -23,6 +23,7 @@ private:
 	bool isCliented;
 
 	geometry_msgs::PoseWithCovarianceStamped m_pose = {};
+	std::vector<geometry_msgs::PoseWithCovarianceStamped> m_pose_list;
 	void OnAmclPoseCallback(const geometry_msgs::PoseWithCovarianceStamped& pose);
 
 	nav_msgs::MapMetaData m_mapMetaData = {};
@@ -49,6 +50,9 @@ private:
 	void ViewMap();
 	void ViewRobot();
 	void ViewPlanPoint();
+
+	int m_isShowTrajectory;
+	void ViewTrajectory();
 
 
 	/*Ros Nav Plan View*/
