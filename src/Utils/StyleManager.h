@@ -11,6 +11,7 @@ public:
         CINDER,
         HAZEL_DARK,
         DARKNESS,
+        DRACULA
     } MStyle_t;
 
     static bool ShowStyleSelector(const char* label);
