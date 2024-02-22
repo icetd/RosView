@@ -310,7 +310,10 @@ void NodeLayer::NavShowPlan()
 	}
 	ImGui::NewLine();
 	ImGui::RadioButton(u8"显示轨迹", &m_isShowTrajectory, 1); ImGui::SameLine(0, 20);
-	ImGui::RadioButton(u8"不显示轨迹", &m_isShowTrajectory, 0);
+	ImGui::RadioButton(u8"不显示轨迹", &m_isShowTrajectory, 0); ImGui::SameLine(0, 20);
+	if (ImGui::Button(u8"清空轨迹", ImVec2(80, 20))) {
+		m_pose_list.clear();
+	}
 	ImGui::NewLine();
 	
 	if (ImGui::Button(u8"发布路线", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
