@@ -8,6 +8,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Layer.h"
+#include "INIReader.h"
 
 class Application 
 {
@@ -44,6 +45,8 @@ private:
 
     void Init();
     void Shutdown();
+
+    INIReader *m_config;
 
 };
 

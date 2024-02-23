@@ -82,7 +82,9 @@ void Application::Init()
     // fonts set
 	io.Fonts->AddFontFromFileTTF("./res/fonts/YaHei.ttf", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
 
-	StyleManager::SelectTheme(StyleManager::MStyle_t::HAZEL_DARK);
+	m_config = new INIReader("./configs/style.ini");
+	int color_style = m_config->GetInteger("STYLE", "style", 5);
+	StyleManager::SelectTheme((StyleManager::MStyle_t) color_style);
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
