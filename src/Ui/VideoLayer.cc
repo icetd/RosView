@@ -101,7 +101,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 
 		ImGui::Separator();
 		ImGui::NewLine();
-		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Application average %.3f ms/frame (%.1f FPS)",
+		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "Application average %.3f ms/frame (%.1f FPS)",
 			1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::PopItemWidth();
 		ImGui::End();
