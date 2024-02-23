@@ -112,7 +112,7 @@ list(APPEND EXTRA_LIBS
 	opengl32 glfw User32 Gdi32 Shell32
 )
 
-add_executable(${PROJECT_NAME} ${SRC_FILES} ${INC_FILES} ${RES_FILES})
+add_executable(${PROJECT_NAME} WIN32 ${SRC_FILES} ${INC_FILES} ${RES_FILES})
 
 # Add the target includes for MY_PROJECT 
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
