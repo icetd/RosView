@@ -137,22 +137,41 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 			ImGui::End();
 		}
 
-		// add nav message view
+		// add power message view
 		{
 			if (!(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize))
 				ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetFontSize() * 12.0f), ImGuiCond_FirstUseEver);
 
-			ImGui::Begin(u8"消息");
+			ImGui::Begin(u8"电源状态");
 			ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
 			ImGui::AlignTextToFramePadding();
 
-			OnNavMessage();
+			OnMessagePower();
+
+			ImGui::PopItemWidth();
+			ImGui::End();
+		}
+
+		// add oil needle status view
+		{
+			if (!(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize))
+				ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetFontSize() * 12.0f), ImGuiCond_FirstUseEver);
+
+			ImGui::Begin(u8"油管状态");
+			ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
+			ImGui::AlignTextToFramePadding();
+
+			OnMessageOilNeedle();
 
 			ImGui::PopItemWidth();
 			ImGui::End();
 		}
 	}
 }
+
+glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 void NodeLayer::OnRenderView()
 {
@@ -173,6 +192,7 @@ void NodeLayer::ViewMap()
 	ImGui::BeginChild("Map");
 	ImGui::Image((ImTextureID)(intptr_t)m_Texture_Map->getId(), m_viewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::EndChild();
+	    // 处理相机控制
 }
 
 void NodeLayer::ViewRobot()
@@ -363,7 +383,15 @@ void NodeLayer::NavShowPlan()
 		status.status = status.CONTINUE;
 		m_AppNode->pubCmdPlan(status);
 	}
+	ImGui::SeparatorText(u8"消息");
+	ImGui::Text(u8"当前位置:"); ImGui::SameLine(0, 20);
+	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "X: %.4fm", m_realrobotPos.x); ImGui::SameLine(0, 20);
+	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Y: %.4fm", m_realrobotPos.y); ImGui::SameLine(0, 20);
+	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Yaw: %.4f", m_robotAngle);
 
+	ImGui::Text(u8"执行消息"); ImGui::SameLine(0, 20);
+	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_plan_back_msg.c_str());
+	
 	HelpMarker(u8"1.选择路线后，可以在目标点以及左侧视窗中查看具体目标点。\n"
 			   "2.目标点中按顺序列出了所有当前线路途经的目标，机器人导航过程中最近途经的目标点高亮显示。\n"
 			   "3.点击发布路线，可以将当前路线发布给机器。\n"
@@ -373,15 +401,62 @@ void NodeLayer::NavShowPlan()
 			   "7.最后一个目标点高亮时表示当前路线执行完毕。");
 }
 
-void NodeLayer::OnNavMessage()
+void NodeLayer::OnMessagePower()
 {
-	ImGui::Text(u8"当前位置:"); ImGui::SameLine(0, 20);
-	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "X: %.4fm", m_realrobotPos.x); ImGui::SameLine(0, 20);
-	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Y: %.4fm", m_realrobotPos.y); ImGui::SameLine(0, 20);
-	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Yaw: %.4f", m_robotAngle);
+	ImGui::SeparatorText(u8"电源状态");
+    static ScrollingBuffer sdata1, sdata2;
+	
+	std::srand(std::time(nullptr));
+    // 生成0到24之间的随机浮点数
+    float voltage = 24;
+    float current = 1.5;
+	
+	static float t = 0;
+    t += ImGui::GetIO().DeltaTime;
+	sdata1.AddPoint(t, voltage);
+	sdata2.AddPoint(t, current);
 
-	ImGui::Text(u8"执行消息"); ImGui::SameLine(0, 20);
-	ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", m_plan_back_msg.c_str());
+	static float history = 10.0f;
+
+    static ImPlotAxisFlags flags = ImPlotAxisFlags_NoTickLabels;
+
+    if (ImPlot::BeginPlot("##ScrollVoltage", ImVec2(-1,150) )) {
+        ImPlot::SetupAxes(nullptr, nullptr, flags, 0);
+        ImPlot::SetupAxisLimits(ImAxis_X1, t - history, t, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 22, 29);
+        ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.1f, 0.1f, 0.9f, 0.5f));
+		ImPlot::PlotShaded(u8"电压(V)", &sdata1.Data[0].x, &sdata1.Data[0].y, sdata1.Data.size(), -INFINITY, 0, sdata1.Offset, 2 * sizeof(float));
+		ImPlot::PopStyleColor();
+        ImPlot::EndPlot();
+    }
+
+	if (ImPlot::BeginPlot("##ScrollCurrent", ImVec2(-1,150) )) {
+		ImPlot::SetupAxes(nullptr, nullptr, flags, 0);
+		ImPlot::SetupAxisLimits(ImAxis_X1, t - history, t, ImGuiCond_Always);
+		ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 3);
+        ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.9f, 0.1f, 0.1f, 0.5f));
+		ImPlot::PlotShaded(u8"电流(A)", &sdata2.Data[0].x, &sdata2.Data[0].y, sdata2.Data.size(), -INFINITY, 0, sdata2.Offset, 2 * sizeof(float));
+		ImPlot::PopStyleColor();
+        ImPlot::EndPlot();
+    }
+    ImGui::SliderFloat(u8"历史时间", &history, 1, 30, "%.1f s");
+}
+
+void NodeLayer::OnMessageOilNeedle()
+{
+	ImGui::SeparatorText(u8"油管状态");
+	ImGui::NewLine();
+	static ImS8 data[6] = {11, 40, 80, 70, 50, 80};
+	if (ImPlot::BeginPlot(u8"针管油量"))
+	{
+		ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 90);
+		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.5f, 0.5f, 0.1f, 0.8f));
+		ImPlot::PlotBars(u8"油量(ml)", data, 6, 0.7, 1);
+		ImPlot::PopStyleColor();
+		ImPlot::EndPlot();
+	}
 }
 
 void NodeLayer::OnRenderMake()

@@ -47,6 +47,7 @@ private:
 	ImVec2 m_viewportSize; // view size for all child
 	ImVec2 m_realrobotPos;
 	float m_robotAngle;
+	float m_viewScale;
 	void OnRenderView();
 	void ViewMap();
 	void ViewRobot();
@@ -63,7 +64,8 @@ private:
 	void OnRenderNav();
 	void NavShowPlan();
 
-	void OnNavMessage();
+	void OnMessagePower();
+	void OnMessageOilNeedle();
 
 	/*Ros Mav Make Plan View*/
 

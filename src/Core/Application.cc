@@ -93,6 +93,7 @@ void Application::Init()
 
 	ImGui_ImplGlfw_InitForOpenGL(m_WindowHandler, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
+	ImPlot::CreateContext();
 }
 
 void Application::Shutdown()
@@ -102,6 +103,7 @@ void Application::Shutdown()
 
     m_LayerStack.clear();
 
+	ImPlot::DestroyContext();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
