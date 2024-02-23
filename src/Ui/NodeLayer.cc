@@ -390,7 +390,7 @@ void NodeLayer::NavShowPlan()
 	ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.1f, 1.0f), "Yaw: %.4f", m_robotAngle);
 
 	ImGui::Text(u8"执行消息"); ImGui::SameLine(0, 20);
-	ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.1f, 1.0f), "%s", m_plan_back_msg.c_str());
+	ImGui::TextColored(ImVec4(0.1f, 0.6f, 0.1f, 1.0f), "%s", m_plan_back_msg.c_str());
 	
 	HelpMarker(u8"1.选择路线后，可以在目标点以及左侧视窗中查看具体目标点。\n"
 			   "2.目标点中按顺序列出了所有当前线路途经的目标，机器人导航过程中最近途经的目标点高亮显示。\n"
