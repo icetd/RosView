@@ -7,6 +7,8 @@
 #include "AppNode.h"
 #include "Texuture.h"
 #include "PlanManager.h"
+#include "TcpClient.h"
+#include "MTimer.h"
 #include "Utils.h"
 #include "INIReader.h"
 
@@ -19,9 +21,36 @@ protected:
 	virtual void OnDetach() override;
 
 private:
+	MTimer *m_timer;
+	void TimerSendToPowerControl();
+
+	typedef enum {
+		UREF_BOARD = 0,
+		IREF_CHG,
+		IREF_RUN,
+		IREF_POWR0,
+		IREF_CTRL,
+		IREF_XYZ,
+		IREF_OIL
+	} CurrentType_t;
+
+	std::string m_powerControl_message;
+	std::string m_powerControl_url;
+	uint16_t m_powerControl_port;
+	bool isPowerControlCliented;
+	TcpClient *m_powerControl_client;
+	float m_robot_voltage;
+	float m_robot_power;
+	float m_robot_current[7];
+	float m_robot_total_current;
+
+	int16_t m_current_index;
+	uint16_t m_voltage;
+	void OnPowerControlMessage(std::string message);
+
 	std::string m_master_url;
 	AppNode* m_AppNode = nullptr;
-	bool isCliented;
+	bool isRosCliented;
 
 	geometry_msgs::PoseWithCovarianceStamped m_pose = {};
 	std::vector<geometry_msgs::PoseWithCovarianceStamped> m_pose_list;
@@ -64,8 +93,10 @@ private:
 	void OnRenderNav();
 	void NavShowPlan();
 
-	void OnMessagePower();
-	void OnMessageOilNeedle();
+	
+	void OnPowerControlView();
+	void OnMessagePowerView();
+	void OnMessageOilNeedleView();
 
 	/*Ros Mav Make Plan View*/
 

@@ -6,7 +6,7 @@ add_subdirectory(thirdparty/glfw)
 add_subdirectory(thirdparty/glm)
 
 set (CMKAE_CXX_STANDARD 14)
-set (CMAKE_BUILD_TYPE Release)
+set (CMAKE_BUILD_TYPE Debug)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -21,7 +21,6 @@ set (STB_IMAGE_INC		"${CMAKE_CURRENT_LIST_DIR}/thirdparty/stb_image")
 set (GLM_INC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/glm")
 set (IMGUI_SRC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/imgui")
 set (IMPLOT_SRC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/implot")
-set (FILEDIALOGS_SRC	"${CMAKE_CURRENT_LIST_DIR}/thirdparty/tinyfiledialogs")
 set (FFMPEG_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/thirdparty/FFmpeg/include")
 set (FFMPEG_LIB_DIR     "${CMAKE_CURRENT_LIST_DIR}/thirdparty/FFmpeg/lib")
 set (SQLITE3_SRC		"${CMAKE_CURRENT_LIST_DIR}/thirdparty/sqlite3")
@@ -36,7 +35,7 @@ link_directories(
 
 include_directories(
 	${INCLUDE_DIR}
-	${INCLUDE_DIR}/test
+	${INCLUDE_DIR}/Commuication
 	${INCLUDE_DIR}/Core
 	${INCLUDE_DIR}/Video
 	${INCLUDE_DIR}/Graphics
@@ -50,8 +49,6 @@ include_directories(
 	${GLM_INC}
 	${IMGUI_SRC}
 	${IMPLOT_SRC}
-	${FILEDIALOGS_SRC}
-	${FILEDIALOGS_SRC}/backends
 	${FFMPEG_INCLUDE_DIR}
     ${ROS_LIB}
 	${SQLITE3_INC}
@@ -62,6 +59,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 file(GLOB_RECURSE SRC_FILES
     "${SOURCE_DIR}/*.c*"
+    "${SOURCE_DIR}/Commuication/*.c*"
     "${SOURCE_DIR}/Core/*.c*"
     "${INCLUDE_DIR}/Graphics/*.c*"
     "${INCLUDE_DIR}/Plan/*.c*"
@@ -72,15 +70,13 @@ file(GLOB_RECURSE SRC_FILES
 	"${GLAD_SRC}/*c*"
 	"${IMGUI_SRC}/*.c*"
 	"${IMPLOT_SRC}/*.c*"
-	"${FILEDIALOGS_SRC}/*c*"
-	"${FILEDIALOGS_SRC}/backends/*c*"
     "${ROS_LIB}/*.c*"
 	"${SQLITE3_SRC}/*c*"
 )
 
 file (GLOB_RECURSE INC_FILES
     "${INCLUDE_DIR}/*.h"
-    "${SOURCE_DIR}/test/*.h"
+    "${SOURCE_DIR}/Commuication/*.h"
     "${INCLUDE_DIR}/Core/*.h"
     "${INCLUDE_DIR}/Graphics/*.h"
     "${INCLUDE_DIR}/Plan/*.h"
@@ -91,8 +87,6 @@ file (GLOB_RECURSE INC_FILES
 	"${IMGUI_SRC}/*.h"
 	"${IMPLOT_SRC}/*.h"
 	"${GLAD_INC}/*h"
-	"${FILEDIALOGS_SRC}/*h"
-	"${FILEDIALOGS_SRC}/backends/*h"
     "${ROS_LIB}/*.h"
 	"{SQLITE3_INC}/*.h"
 )
@@ -107,12 +101,11 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SRC_FILES})
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${INC_FILES})
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${RES_FILES})
 
-
 list(APPEND EXTRA_LIBS
-	opengl32 glfw User32 Gdi32 Shell32
+	opengl32 glfw User32 Gdi32 Shell32 
 )
 
-add_executable(${PROJECT_NAME} WIN32 ${SRC_FILES} ${INC_FILES} ${RES_FILES})
+add_executable(${PROJECT_NAME} ${SRC_FILES} ${INC_FILES} ${RES_FILES})
 
 # Add the target includes for MY_PROJECT 
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})

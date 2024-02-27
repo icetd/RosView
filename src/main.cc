@@ -1,7 +1,6 @@
-﻿#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+﻿//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #include <iostream>
 #include <ros.h>
-#include <Windows.h>
 #include "Application.h"
 #include "log.h"
 #include "MainLayer.h"

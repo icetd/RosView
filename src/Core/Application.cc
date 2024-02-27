@@ -65,7 +65,6 @@ void Application::Init()
         exit(EXIT_FAILURE);
     }
 
-
     LOG(NOTICE, "%s\n", glGetString(GL_VERSION));
 	ImGui::CreateContext();
 	IMGUI_CHECKVERSION();
@@ -84,6 +83,7 @@ void Application::Init()
 
 	m_config = new INIReader("./configs/style.ini");
 	int color_style = m_config->GetInteger("STYLE", "style", 5);
+	
 	StyleManager::SelectTheme((StyleManager::MStyle_t) color_style);
 
 	ImGuiStyle& style = ImGui::GetStyle();

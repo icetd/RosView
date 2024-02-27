@@ -1,5 +1,6 @@
 #include "NodeLayer.h"
 #include "TransForm.h"
+#include "VoltageCalculate.h"
 #include <string>
 #include <iostream>
 
@@ -28,10 +29,18 @@ void NodeLayer::OnAttach()
 	m_make_goal_num = 1;
 	m_make_plan_num = 1;
 
-	isCliented = false;
+
+	isPowerControlCliented = false;
+	m_robot_total_current = 0;
+	isRosCliented = false;
+	
 
 	m_config = new INIReader("./configs/url.ini");
 	m_master_url = m_config->Get("ROS", "URL_MASTER", "192.168.2.162:11411");
+	m_powerControl_url = m_config->Get("ROSPOWERCONTROL", "URL", "192.168.2.200");
+	m_powerControl_port = m_config->GetInteger("ROSPOWERCONTROL", "PORT", 23);
+
+
 
 	m_AppNode = AppNode::GetInstance();
 	m_AppNode->setOnAmclPoseCallback(std::bind(&NodeLayer::OnAmclPoseCallback, this, std::placeholders::_1));
@@ -90,12 +99,12 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 		if (radio_master) {
 			m_AppNode->init((char *)m_master_url.c_str());
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
-			isCliented = true;
+			isRosCliented = true;
 		}
 		else {
 			m_AppNode->destroy();
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Stop");
-			isCliented = false;
+			isRosCliented = false;
 		}
 
 		HelpMarker(u8"输入机器人地址后，点击连接机器人");
@@ -146,7 +155,7 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 			ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
 			ImGui::AlignTextToFramePadding();
 
-			OnMessagePower();
+			OnMessagePowerView();
 
 			ImGui::PopItemWidth();
 			ImGui::End();
@@ -161,8 +170,23 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 			ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
 			ImGui::AlignTextToFramePadding();
 
-			OnMessageOilNeedle();
+			OnMessageOilNeedleView();
 
+			ImGui::PopItemWidth();
+			ImGui::End();
+		}
+
+		// add powerControl view
+		{
+			if (!(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize))
+				ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetFontSize() * 12.0f), ImGuiCond_FirstUseEver);
+
+			ImGui::Begin(u8"电源控制");
+			ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.2f);
+			ImGui::AlignTextToFramePadding();
+			
+			OnPowerControlView();
+			
 			ImGui::PopItemWidth();
 			ImGui::End();
 		}
@@ -178,7 +202,7 @@ void NodeLayer::OnRenderView()
 	/*get view info for all child*/
 	m_viewStartPos = ImGui::GetCursorScreenPos();
 	m_viewportSize = ImGui::GetContentRegionAvail();
-	if (!isCliented)
+	if (!isRosCliented)
 		return;
 	ViewMap();
 	ViewRobot();
@@ -290,7 +314,7 @@ void NodeLayer::ViewTrajectory()
 
 void NodeLayer::OnRenderNav()
 {
-	if (!isCliented)
+	if (!isRosCliented)
 		return;
 	NavShowPlan();
 }
@@ -401,20 +425,58 @@ void NodeLayer::NavShowPlan()
 			   "7.最后一个目标点高亮时表示当前路线执行完毕。");
 }
 
-void NodeLayer::OnMessagePower()
+void NodeLayer::OnPowerControlView()
+{
+	
+	ImGui::SeparatorText(u8"电源控制");
+	static int radio_power;
+	ImGui::RadioButton(u8"连接电源控制", &radio_power, 1); ImGui::SameLine(0, 20);
+	ImGui::RadioButton(u8"断开电源控制", &radio_power, 0); ImGui::SameLine(0, 20);
+
+	if (radio_power) {
+		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
+		if (!isPowerControlCliented) {
+			m_powerControl_client = new TcpClient(m_powerControl_url, m_powerControl_port);
+			if (m_powerControl_client->Init() != 0)
+				exit(1);
+			m_powerControl_client->SetMessageCallback(std::bind(&NodeLayer::OnPowerControlMessage, this, std::placeholders::_1));
+			m_powerControl_client->Start();
+
+			m_timer = new MTimer(166);
+			m_timer->SetTimerCallback(std::bind(&NodeLayer::TimerSendToPowerControl, this));
+			m_timer->Start();
+
+			isPowerControlCliented = true;
+		}
+	} else {
+		if (isPowerControlCliented) {
+			m_timer->stop();
+			m_powerControl_client->stop();
+		}
+		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Stop");
+		isPowerControlCliented = false;
+	}
+
+	if (!isPowerControlCliented)
+		return;
+
+	if (ImGui::Button(u8"测试", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
+
+	}
+}
+
+void NodeLayer::OnMessagePowerView()
 {
 	ImGui::SeparatorText(u8"电源状态");
     static ScrollingBuffer sdata1, sdata2;
 	
 	std::srand(std::time(nullptr));
     // 生成0到24之间的随机浮点数
-    float voltage = 24;
-    float current = 1.5;
 	
 	static float t = 0;
     t += ImGui::GetIO().DeltaTime;
-	sdata1.AddPoint(t, voltage);
-	sdata2.AddPoint(t, current);
+	sdata1.AddPoint(t, m_robot_power);
+	sdata2.AddPoint(t, m_robot_total_current);
 
 	static float history = 10.0f;
 
@@ -423,10 +485,10 @@ void NodeLayer::OnMessagePower()
     if (ImPlot::BeginPlot("##ScrollVoltage", ImVec2(-1,150) )) {
         ImPlot::SetupAxes(nullptr, nullptr, flags, 0);
         ImPlot::SetupAxisLimits(ImAxis_X1, t - history, t, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, 22, 29);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 100);
         ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.1f, 0.1f, 0.9f, 0.5f));
-		ImPlot::PlotShaded(u8"电压(V)", &sdata1.Data[0].x, &sdata1.Data[0].y, sdata1.Data.size(), -INFINITY, 0, sdata1.Offset, 2 * sizeof(float));
+		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.1f, 0.1f, 0.9f, 0.9f));
+		ImPlot::PlotShaded(u8"电量(%)", &sdata1.Data[0].x, &sdata1.Data[0].y, sdata1.Data.size(), -INFINITY, 0, sdata1.Offset, 2 * sizeof(float));
 		ImPlot::PopStyleColor();
         ImPlot::EndPlot();
     }
@@ -436,7 +498,7 @@ void NodeLayer::OnMessagePower()
 		ImPlot::SetupAxisLimits(ImAxis_X1, t - history, t, ImGuiCond_Always);
 		ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 3);
         ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.9f, 0.1f, 0.1f, 0.5f));
+		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.9f, 0.1f, 0.1f, 0.9f));
 		ImPlot::PlotShaded(u8"电流(A)", &sdata2.Data[0].x, &sdata2.Data[0].y, sdata2.Data.size(), -INFINITY, 0, sdata2.Offset, 2 * sizeof(float));
 		ImPlot::PopStyleColor();
         ImPlot::EndPlot();
@@ -444,7 +506,7 @@ void NodeLayer::OnMessagePower()
     ImGui::SliderFloat(u8"历史时间", &history, 1, 30, "%.1f s");
 }
 
-void NodeLayer::OnMessageOilNeedle()
+void NodeLayer::OnMessageOilNeedleView()
 {
 	ImGui::SeparatorText(u8"油管状态");
 	ImGui::NewLine();
@@ -461,7 +523,7 @@ void NodeLayer::OnMessageOilNeedle()
 
 void NodeLayer::OnRenderMake()
 {
-	if (!isCliented)
+	if (!isRosCliented)
 		return;
 	MakePlan();
 }
@@ -472,7 +534,7 @@ void NodeLayer::MakePlan()
 	static char text[128] = {}; // 设置输入框默认参数
 	ImGui::Text(u8"制作路线请输入密码:");
 	ImGui::SameLine(0, 20);
-	ImGui::InputText("",text, IM_ARRAYSIZE(text), ImGuiInputTextFlags_Password, 0, text);
+	ImGui::InputText(u8"输入密码",text, IM_ARRAYSIZE(text), ImGuiInputTextFlags_Password, 0, text);
 	if (strcmp((char*)text, "DeepCloud123") != 0)
 		return;
 
@@ -648,6 +710,44 @@ void NodeLayer::MakePlan()
 	HelpMarker(u8"手动控制机器人到达指定位置后添加目标点到路线");
 }
 
+void NodeLayer::TimerSendToPowerControl()
+{
+	static int channel = 0;
+	
+	char tempbuf[8];
+	if (channel > 6) {
+		channel = 0;
+		m_robot_total_current = 0;
+	}
+
+	sprintf(tempbuf, "g%d", channel);
+
+	channel ++;
+	m_powerControl_client->SendData(tempbuf, 8);
+}
+
+void NodeLayer::OnPowerControlMessage(std::string message)
+{
+	sscanf(message.c_str(), "U%d=%d", &m_current_index, &m_voltage);
+	static float temp;
+	switch (m_current_index) {
+	case CurrentType_t::UREF_BOARD:
+		temp = (float)m_voltage / 4096.0f * 3.0 * 11.39;
+		m_robot_voltage = calcaulateVoltage(temp);
+		m_robot_power = calculatePower(m_robot_voltage);
+		break;
+	case CurrentType_t::IREF_CHG:
+	case CurrentType_t::IREF_RUN:
+	case CurrentType_t::IREF_POWR0:
+	case CurrentType_t::IREF_CTRL:
+	case CurrentType_t::IREF_XYZ:
+	case CurrentType_t::IREF_OIL:
+		m_robot_current[m_current_index] = (float)m_voltage / 4096 * 3.0;
+		break;
+	}
+	for (int i = 1; i < 6; i++)
+		m_robot_total_current += m_robot_current[i];
+}
 
 void NodeLayer::OnAmclPoseCallback(const geometry_msgs::PoseWithCovarianceStamped& pose)
 {
