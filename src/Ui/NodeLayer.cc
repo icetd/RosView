@@ -1,4 +1,4 @@
-#include "NodeLayer.h"
+﻿#include "NodeLayer.h"
 #include "TransForm.h"
 #include "VoltageCalculate.h"
 #include <string>
@@ -31,7 +31,13 @@ void NodeLayer::OnAttach()
 
 
 	isPowerControlCliented = false;
+	m_power_run = false;
+	m_power_ctrl = false;
+	m_power_xyz = false;
+	m_power_oil = false;
 	m_robot_total_current = 0;
+
+
 	isRosCliented = false;
 	
 
@@ -50,11 +56,19 @@ void NodeLayer::OnAttach()
 }
 
 void NodeLayer::OnDetach()
-{
+{	
 	m_AppNode->destroy();
 
 	if (m_AppNode)
 		delete m_AppNode;
+	if (m_config)
+		delete m_config;
+
+	if (m_timer) 
+		delete m_timer;
+
+	if (m_powerControl_client)
+		delete m_powerControl_client;
 }
 
 void NodeLayer::OnUpdate(float ts)
@@ -429,6 +443,7 @@ void NodeLayer::OnPowerControlView()
 {
 	
 	ImGui::SeparatorText(u8"电源控制");
+	ImGui::Text(u8"\t\t电源控制地址:\t%s:%d", m_powerControl_url.c_str(), m_powerControl_port);
 	static int radio_power;
 	ImGui::RadioButton(u8"连接电源控制", &radio_power, 1); ImGui::SameLine(0, 20);
 	ImGui::RadioButton(u8"断开电源控制", &radio_power, 0); ImGui::SameLine(0, 20);
@@ -460,8 +475,52 @@ void NodeLayer::OnPowerControlView()
 	if (!isPowerControlCliented)
 		return;
 
-	if (ImGui::Button(u8"测试", ImVec2(110, 30)) && m_PlanManager->GetCurrentPlanId() > 0) {
+	ImGui::NewLine();
+	static bool btn_power_run;
+	ImGui::Text(u8"行走电源"); ImGui::SameLine(0, 20);
+	MToggleButton(u8"行走电源_", &btn_power_run);
+	if (btn_power_run && !m_power_run) {
+		m_powerControl_client->SendData("s1", 2);
+		m_power_run = true;
+	} else if (!btn_power_run && m_power_run){
+		m_powerControl_client->SendData("r1", 2);
+		m_power_run = false;
+	}
 
+	ImGui::SameLine(0, 40);
+	static bool btn_power_ctrl;
+	ImGui::Text(u8"控制电源"); ImGui::SameLine(0, 20);
+	MToggleButton(u8"控制电源_", &btn_power_ctrl);
+	if (btn_power_ctrl && !m_power_ctrl) {
+		m_powerControl_client->SendData("s2", 2);
+		m_power_ctrl = true;
+	} else if (!btn_power_ctrl && m_power_ctrl){
+		m_powerControl_client->SendData("r2", 2);
+		m_power_ctrl = false;
+	}
+
+	ImGui::NewLine();
+	static bool btn_power_xyz;
+	ImGui::Text(u8"对接电源"); ImGui::SameLine(0, 20);
+	MToggleButton(u8"对接电源_", &btn_power_xyz);
+	if (btn_power_xyz && !m_power_xyz) {
+		m_powerControl_client->SendData("s3", 2);
+		m_power_xyz = true;
+	} else if (!btn_power_xyz && m_power_xyz){
+		m_powerControl_client->SendData("r3", 2);
+		m_power_xyz = false;
+	}
+	
+	ImGui::SameLine(0, 40);
+	static bool btn_power_oil;
+	ImGui::Text(u8"取油电源"); ImGui::SameLine(0, 20);
+	MToggleButton(u8"取油电源_", &btn_power_oil);
+	if (btn_power_oil && !m_power_oil) {
+		m_powerControl_client->SendData("s4", 2);
+		m_power_oil = true;
+	} else if (!btn_power_oil && m_power_oil){
+		m_powerControl_client->SendData("r4", 2);
+		m_power_oil = false;
 	}
 }
 
@@ -721,14 +780,14 @@ void NodeLayer::TimerSendToPowerControl()
 	}
 
 	sprintf(tempbuf, "g%d", channel);
-
 	channel ++;
-	m_powerControl_client->SendData(tempbuf, 8);
+
+    m_powerControl_client->SendData(tempbuf, 8);
 }
 
 void NodeLayer::OnPowerControlMessage(std::string message)
 {
-	sscanf(message.c_str(), "U%d=%d", &m_current_index, &m_voltage);
+	sscanf(message.c_str(), "U%hd=%hd", &m_current_index, &m_voltage);
 	static float temp;
 	switch (m_current_index) {
 	case CurrentType_t::UREF_BOARD:

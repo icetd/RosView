@@ -9,8 +9,8 @@
 #include "PlanManager.h"
 #include "TcpClient.h"
 #include "MTimer.h"
-#include "Utils.h"
 #include "INIReader.h"
+#include "Utils.h"
 
 
 class NodeLayer : public Layer
@@ -43,6 +43,11 @@ private:
 	float m_robot_power;
 	float m_robot_current[7];
 	float m_robot_total_current;
+
+	bool m_power_run;
+	bool m_power_ctrl;
+	bool m_power_xyz;
+	bool m_power_oil;
 
 	int16_t m_current_index;
 	uint16_t m_voltage;

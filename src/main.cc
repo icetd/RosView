@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     app->PushLayer<VideoLayer>();
     app->PushLayer<NodeLayer>();
     app->Run();
-    
+
     delete app;
     return 0;
 }

@@ -33,6 +33,7 @@ void MThread::join()
 {
 	this->th.join();
 }
+
 void MThread::detach()
 {
 	this->th.detach();

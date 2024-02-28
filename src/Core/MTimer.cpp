@@ -1,4 +1,4 @@
-#include "MTimer.h"
+﻿#include "MTimer.h"
 
 MTimer::MTimer(uint32_t interval_msec) :
     m_interval_msec(interval_msec)

@@ -1,4 +1,4 @@
-
+﻿
 #include "TcpClient.h"
 #include "log.h"
 
@@ -37,8 +37,8 @@ int TcpClient::Init()
 
     struct sockaddr_in client_addr;
     client_addr.sin_family = AF_INET;
-    client_addr.sin_port = htons(23);
-    client_addr.sin_addr.S_un.S_addr = inet_addr("192.168.2.201");
+    client_addr.sin_port = htons(m_server_port);
+    client_addr.sin_addr.S_un.S_addr = inet_addr(m_server_url.c_str());
 
 
     if (connect(m_clientSocket, (PSOCKADDR)&client_addr, sizeof(sockaddr_in))== SOCKET_ERROR) {
@@ -84,7 +84,11 @@ void TcpClient::run()
                 std::string message;
                 buf[size + 1] = '\0';
                 message = buf;
-                OnMessageCallback(message);
+                try {
+                    OnMessageCallback(message);
+                } catch (char *message) {
+                }
+
             } else if (ret == 0) {
                 LOG(WARN, "tcp client closed.");
                 break;
@@ -112,7 +116,6 @@ bool TcpClient::IsReceiveAble(timeval * tv)
 void TcpClient::DisClient()
 {
     int ret = 0;
-    this->sleepMs(1000); // wait for timer send closed;
     ret = closesocket(m_clientSocket);
     if (ret == 0)
         LOG(INFO, "close socket successed.");
