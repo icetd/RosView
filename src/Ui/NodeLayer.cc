@@ -604,7 +604,6 @@ void NodeLayer::OnMessageOilNeedleView()
 {
 	ImGui::SeparatorText(u8"油管状态");
 	ImGui::NewLine();
-	static ImS8 data[6] = {11, 40, 80, 70, 50, 80};
 	if (ImPlot::BeginPlot(u8"针管油量"))
 	{
 		ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 90);
@@ -866,7 +865,6 @@ void NodeLayer::OnPlanCallback(const std_msgs::String& str)
 	static uint16_t oil_id;
 	static float oil_value;
 
-	m_Log.AddLog("%s\n", m_plan_back_msg.c_str());
 
 	int ret = sscanf(m_planBackString.data, "Plan MOVE [%d] successed", &temp);
 	if (ret)
@@ -883,4 +881,7 @@ void NodeLayer::OnPlanCallback(const std_msgs::String& str)
 	ret = sscanf(m_planBackString.data, "OIL [%d] [%f]", &oil_id, &oil_value);
 	if (ret == 2)
 		m_oil_value[oil_id - 1] = oil_value;
+
+	if (ret != 2)
+		m_Log.AddLog("%s\n", m_plan_back_msg.c_str());
 }
