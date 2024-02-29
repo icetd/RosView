@@ -35,6 +35,9 @@ void NodeLayer::OnAttach()
 	m_power_ctrl = false;
 	m_power_xyz = false;
 	m_power_oil = false;
+	m_power_led_far = false;
+	m_power_led_near = false;
+	m_power_led_oil = false;
 	m_robot_total_current = 0;
 
 
@@ -206,10 +209,6 @@ void NodeLayer::Show_Node_Layout(bool* p_open)
 		}
 	}
 }
-
-glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 void NodeLayer::OnRenderView()
 {
@@ -476,6 +475,7 @@ void NodeLayer::OnPowerControlView()
 		return;
 
 	ImGui::NewLine();
+	ImGui::SeparatorText(u8"电源开关");
 	static bool btn_power_run;
 	ImGui::Text(u8"行走电源"); ImGui::SameLine(0, 20);
 	MToggleButton(u8"行走电源_", &btn_power_run);
@@ -499,7 +499,6 @@ void NodeLayer::OnPowerControlView()
 		m_power_ctrl = false;
 	}
 
-	ImGui::NewLine();
 	static bool btn_power_xyz;
 	ImGui::Text(u8"对接电源"); ImGui::SameLine(0, 20);
 	MToggleButton(u8"对接电源_", &btn_power_xyz);
@@ -521,6 +520,42 @@ void NodeLayer::OnPowerControlView()
 	} else if (!btn_power_oil && m_power_oil){
 		m_powerControl_client->SendData("r4", 2);
 		m_power_oil = false;
+	}
+
+	ImGui::NewLine();
+	ImGui::SeparatorText(u8"灯光开关");
+	static bool btn_power_led_near;
+	ImGui::Text(u8"车近光灯"); ImGui::SameLine(0, 20);
+	MToggleButton(u8"车近光灯_", &btn_power_led_near);
+	if (btn_power_led_near && !m_power_led_near) {
+		m_powerControl_client->SendData("o7", 2);
+		m_power_led_near = true;
+	} else if (!btn_power_led_near && m_power_led_near){
+		m_powerControl_client->SendData("c7", 2);
+		m_power_led_near = false;
+	}
+
+	ImGui::SameLine(0, 40);
+	static bool btn_power_led_far;
+	ImGui::Text(u8"车远光灯"); ImGui::SameLine(0, 20);
+	MToggleButton(u8"车远光灯_", &btn_power_led_far);
+	if (btn_power_led_far && !m_power_led_far) {
+		m_powerControl_client->SendData("o8", 2);
+		m_power_led_far = true;
+	} else if (!btn_power_led_far && m_power_led_far){
+		m_powerControl_client->SendData("c8", 2);
+		m_power_led_far = false;
+	}
+
+	static bool btn_power_led_oil;
+	ImGui::Text(u8"取油室灯"); ImGui::SameLine(0, 20);
+	MToggleButton(u8"取油室灯_", &btn_power_led_oil);
+	if (btn_power_led_oil && !m_power_led_oil) {
+		m_powerControl_client->SendData("o5", 2);
+		m_power_led_oil = true;
+	} else if (!btn_power_led_oil && m_power_led_oil){
+		m_powerControl_client->SendData("c5", 2);
+		m_power_led_oil = false;
 	}
 }
 
@@ -574,7 +609,7 @@ void NodeLayer::OnMessageOilNeedleView()
 	{
 		ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 90);
 		ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(0.5f, 0.5f, 0.1f, 0.8f));
-		ImPlot::PlotBars(u8"油量(ml)", data, 6, 0.7, 1);
+		ImPlot::PlotBars(u8"油量(ml)", m_oil_value, 6, 0.7, 1);
 		ImPlot::PopStyleColor();
 		ImPlot::EndPlot();
 	}
@@ -828,6 +863,8 @@ void NodeLayer::OnPlanCallback(const std_msgs::String& str)
 	m_planBackString = str;
 	m_plan_back_msg = str.data;
 	int temp = 0;
+	static uint16_t oil_id;
+	static float oil_value;
 
 	m_Log.AddLog("%s\n", m_plan_back_msg.c_str());
 
@@ -842,4 +879,8 @@ void NodeLayer::OnPlanCallback(const std_msgs::String& str)
 	ret = sscanf(m_planBackString.data, "Plan STOP [%d] successed", &temp);
 	if (ret)
 		m_current_goal = temp - 1;
+
+	ret = sscanf(m_planBackString.data, "OIL [%d] [%f]", &oil_id, &oil_value);
+	if (ret == 2)
+		m_oil_value[oil_id - 1] = oil_value;
 }

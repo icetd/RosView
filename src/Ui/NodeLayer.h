@@ -48,6 +48,9 @@ private:
 	bool m_power_ctrl;
 	bool m_power_xyz;
 	bool m_power_oil;
+	bool m_power_led_far;
+	bool m_power_led_near;
+	bool m_power_led_oil;
 
 	int16_t m_current_index;
 	uint16_t m_voltage;
@@ -110,6 +113,8 @@ private:
 	int m_make_plan_num;
 	void OnRenderMake();
 	void MakePlan();
+
+	float m_oil_value[6];
 
 	INIReader *m_config;
 };
