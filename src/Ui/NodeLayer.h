@@ -30,8 +30,8 @@ private:
 		IREF_RUN,
 		IREF_POWR0,
 		IREF_CTRL,
-		IREF_XYZ,
-		IREF_OIL
+		IREF_OIL,
+		IREF_XYZ
 	} CurrentType_t;
 
 	std::string m_powerControl_message;

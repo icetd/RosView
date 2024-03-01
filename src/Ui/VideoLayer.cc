@@ -56,8 +56,8 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::Text("\t\t%s", m_url1.c_str());
 		m_VideoThread1->SetUrl((char *)m_url1.c_str());
 		static int radio_video1 = 0;
-		ImGui::RadioButton(u8"打开 video1", &radio_video1, 1); ImGui::SameLine(0, 10);
-		ImGui::RadioButton(u8"关闭 video1", &radio_video1, 0); ImGui::SameLine(0, 20);
+		ImGui::RadioButton(u8"打开 前摄像头", &radio_video1, 1); ImGui::SameLine(0, 10);
+		ImGui::RadioButton(u8"关闭 前摄像头", &radio_video1, 0); ImGui::SameLine(0, 20);
 
 		if (m_VideoThread1->GetCaptureStatus()) {
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
@@ -72,8 +72,8 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread2->SetUrl((char *)m_url2.c_str());
 
 		static int radio_video2 = 0;
-		ImGui::RadioButton(u8"打开 video2", &radio_video2, 1); ImGui::SameLine(0, 10);
-		ImGui::RadioButton(u8"关闭 video2", &radio_video2, 0); ImGui::SameLine(0, 20);
+		ImGui::RadioButton(u8"打开 对接摄像头", &radio_video2, 1); ImGui::SameLine(0, 10);
+		ImGui::RadioButton(u8"关闭 对接摄像头", &radio_video2, 0); ImGui::SameLine(0, 20);
 
 		if (m_VideoThread2->GetCaptureStatus()) {
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
@@ -88,8 +88,8 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		m_VideoThread3->SetUrl((char *)m_url3.c_str());
 
 		static int radio_video3 = 0;
-		ImGui::RadioButton(u8"打开 video3", &radio_video3, 1); ImGui::SameLine(0, 10);
-		ImGui::RadioButton(u8"关闭 video3", &radio_video3, 0); ImGui::SameLine(0, 20);
+		ImGui::RadioButton(u8"打开 取油摄像头", &radio_video3, 1); ImGui::SameLine(0, 10);
+		ImGui::RadioButton(u8"关闭 取油摄像头", &radio_video3, 0); ImGui::SameLine(0, 20);
 
 		if (m_VideoThread3->GetCaptureStatus()) {
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Start");
@@ -107,7 +107,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::End();
 	}
 	{
-		ImGui::Begin("Video1");
+		ImGui::Begin(u8"前摄像头");
 		if (!m_dataBufferList1.empty() && m_VideoThread1->GetCaptureStatus())
 		{
 			bool a = m_dataBufferList1.empty();
@@ -123,7 +123,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::End();
 	}
 	{
-		ImGui::Begin("Video2");
+		ImGui::Begin(u8"对接摄像头");
 		if (!m_dataBufferList2.empty() && m_VideoThread2->GetCaptureStatus())
 		{
 			mutex_data2.lock();
@@ -138,7 +138,7 @@ void VideoLayer::Show_Video_Layout(bool* p_open)
 		ImGui::End();
 	}
 	{
-		ImGui::Begin("Video3");
+		ImGui::Begin(u8"取油室摄像头");
 		if (!m_dataBufferList3.empty() && m_VideoThread3->GetCaptureStatus())
 		{
 			mutex_data3.lock();
