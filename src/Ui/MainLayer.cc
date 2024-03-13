@@ -101,7 +101,7 @@ void MainLayer::OnUpdate(float ts)
 		{
 			HelpMarker(
 			  u8"菜单说明:\n"
-				"\t开始--用于退出程序\n"
+				"\t开始--用于退出程序 (键盘ESC也可退出程序)\n"
 				"\t视窗--控制界面是否显示\n"
 				"\t设置--界面以及主题设置\n"
 				"\t帮助--帮助信息\n\n"
