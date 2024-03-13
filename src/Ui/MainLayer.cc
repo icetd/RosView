@@ -1,10 +1,12 @@
 #include "MainLayer.h"
 #include "Utils.h"
 #include "StyleManager.h"
+#include "Application.h"
 
 bool show_video_layout = true;
 bool show_node_settings_layout = true;
 bool show_tool_log = true;
+bool isExit;
 
 void MainLayer::OnUpdate(float ts)
 {
@@ -60,10 +62,19 @@ void MainLayer::OnUpdate(float ts)
 
 	if (ImGui::BeginMenuBar())
 	{
+		if (ImGui::BeginMenu(u8"开始"))
+		{
+			ImGui::MenuItem(u8"退出", NULL, &isExit);
+			if (isExit)
+				Application::GetInstance()->Close();
+			ImGui::EndMenu();
+		}
+
 		if (ImGui::BeginMenu(u8"视窗"))
 		{
 			ImGui::MenuItem(u8"视频", NULL, &show_video_layout);
 			ImGui::MenuItem(u8"机器人", NULL, &show_node_settings_layout);
+			ImGui::MenuItem(u8"日志", NULL, &show_tool_log);
 			ImGui::EndMenu();
 		}
 
@@ -71,7 +82,7 @@ void MainLayer::OnUpdate(float ts)
 		{
 			// Disabling fullscreen would allow the window to be moved to the front of other windows,
 			// which we can't undo at the moment without finer window depth/z control.
-			ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
+			// ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
 			ImGui::MenuItem("Padding", NULL, &opt_padding);
 			ImGui::Separator();
 
@@ -82,28 +93,28 @@ void MainLayer::OnUpdate(float ts)
 			if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
 			if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
 			ImGui::Separator();
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu(u8"工具"))
-		{
 			StyleManager::ShowStyleSelector(u8"选择主题");
-			ImGui::MenuItem(u8"日志", NULL, &show_tool_log);
 			ImGui::EndMenu();
 		}
 
 		if (ImGui::BeginMenu(u8"帮助"))
 		{
-			HelpMarker(u8"界面说明:\n" \
+			HelpMarker(
+			  u8"菜单说明:\n"
+				"\t开始--用于退出程序\n"
+				"\t视窗--控制界面是否显示\n"
+				"\t设置--界面以及主题设置\n"
+				"\t帮助--帮助信息\n\n"
+				"界面说明:\n" \
 				"\t地图--显示地图、导航路线、以及机器人位置\n" \
 				"\t电源控制--用于控制机器人各个电源以及灯光\n" \
 				"\t导航--用于路线的选择、发布\n" \
 				"\t路线制作--用于路线的制作\n\n" \
 				"\t机器人--用于连接机器人\n" \
 				"\t视频--用于控制视频流的开关\n" \
-				"\t\tvideo1--视频1显示区\n" \
-				"\t\tvideo2--视频2显示区\n" \
-				"\t\tvideo3--视频3显示区\n\n" \
+				"\t\t前摄像头--机器人前方视频流\n" \
+				"\t\t对接摄像头--对接扫码视频流\n" \
+				"\t\t取油室摄像头--取油针管观察视频流\n\n" \
 				"\t日志--机器人返回信息\n" \
 				"\t电源状态--显示电量、电流\n" \
 				"\t油管状态--显示油管油量\n\n" \

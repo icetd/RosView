@@ -45,7 +45,7 @@ void Application::Init()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
+	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     m_WindowHandler = glfwCreateWindow(m_Width, m_Height, m_AppName.c_str(), NULL, NULL);
 
     GLFWimage icon;
@@ -125,8 +125,11 @@ void Application::Run()
     ImVec4 clear_color = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
 
 	while (!glfwWindowShouldClose(m_WindowHandler)) {
-
 		glfwPollEvents();
+        // 检查是否按下了 ESC 键
+        if (glfwGetKey(m_WindowHandler, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(m_WindowHandler, GLFW_TRUE); // 通知 GLFW 应该关闭窗口
+        }
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -165,6 +168,11 @@ void Application::Run()
         m_TimeStep = glm::min<float>(m_FrameTime, 0.03333);
         m_LastFrameTime = time;
     }
+}
+
+void Application::Close()
+{
+    glfwSetWindowShouldClose(m_WindowHandler, GLFW_TRUE); // 通知 GLFW 应该关闭窗口
 }
 
 float Application::GetTime()

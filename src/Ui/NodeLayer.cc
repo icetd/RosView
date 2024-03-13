@@ -579,7 +579,7 @@ void NodeLayer::OnMessagePowerView()
 	static float history = 10.0f;
 
     if (ImPlot::BeginPlot("##ScrollVoltage", ImVec2(-1, 150) )) {
-        ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoTickLabels, 0);
+        ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoTickLabels , ImPlotAxisFlags_LockMax  | ImPlotAxisFlags_LockMin);
         ImPlot::SetupAxisLimits(ImAxis_X1, t - history, t, ImGuiCond_Always);
         ImPlot::SetupAxisLimits(ImAxis_Y1, -1, 100);
         ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
@@ -809,7 +809,9 @@ void NodeLayer::MakePlan()
 		m_AppNode->pubCmdPlan(status);
 	}
 
-	HelpMarker(u8"手动控制机器人到达指定位置后添加目标点到路线");
+	HelpMarker(u8"\t1.手动控制机器人到达指定位置后添加目标点到路线\n"
+				 "\t2.清空数据库，需要先清空本地路线，然后从数据库更新后。\n"
+				 "\t再点击清空数据库防止本地路线和数据库路线不一致");
 }
 
 void NodeLayer::TimerSendToPowerControl()
