@@ -195,7 +195,7 @@ void VideoLayer::OnRenderVideo2()
 {
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 	if (m_VideoThread2->GetCaptureStatus()) {
-		ImGui::Image((ImTextureID)(intptr_t)m_Texture2->getId(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, 1));
+		ImGui::Image((ImTextureID)(intptr_t)m_Texture2->getId(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(1, 1), ImVec2(0, 0));
 	}
 	else {
 	}

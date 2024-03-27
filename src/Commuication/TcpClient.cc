@@ -88,14 +88,9 @@ void TcpClient::run()
                     OnMessageCallback(message);
                 } catch (char *message) {
                 }
-
-            } else if (ret == 0) {
-                LOG(WARN, "tcp client closed.");
-                break;
-            } else {
-                LOG(ERRO, "tcp client receive failed.");
-                break;
             }
+        } else if (ret == 0) {
+            LOG(INFO, "wait for message");
         } else if (ret == -1) {
             LOG(NOTICE, "stop %s", strerror(errno));
             this->stop();

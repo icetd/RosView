@@ -45,7 +45,7 @@ void NodeLayer::OnAttach()
 	
 
 	m_config = new INIReader("./configs/url.ini");
-	m_master_url = m_config->Get("ROS", "URL_MASTER", "192.168.2.162:11411");
+	m_master_url = m_config->Get("ROS", "URL_MASTER", "192.168.2.162:11311");
 	m_powerControl_url = m_config->Get("ROSPOWERCONTROL", "URL", "192.168.2.200");
 	m_powerControl_port = m_config->GetInteger("ROSPOWERCONTROL", "PORT", 23);
 
@@ -908,4 +908,5 @@ void NodeLayer::OnPlanCallback(const std_msgs::String& str)
 
 	if (ret != 2)
 		m_Log.AddLog("%s\n", m_plan_back_msg.c_str());
+
 }

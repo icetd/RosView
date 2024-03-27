@@ -104,7 +104,7 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${INC_FILES})
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${RES_FILES})
 
 list(APPEND EXTRA_LIBS
-	opengl32 glfw User32 Gdi32 Shell32 
+	ws2_32 opengl32 glfw User32 Gdi32 Shell32 
 )
 
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${INC_FILES} ${RES_FILES})
