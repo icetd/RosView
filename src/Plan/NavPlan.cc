@@ -52,7 +52,7 @@ int NavPlan::pushPlan()
 		return 0;
 
 	sprintf(temp, 
-	"create table %s(id integer primary key autoincrement,goal_id integer,goal_type integer,action_id intefer, px REAL,py REAL,oz REAL,ow REAL, name text, needle_capcity intefer, alignment_offset intefer)",
+	"create table %s(id integer primary key autoincrement,goal_id integer,goal_type integer,action_id intefer, px REAL,py REAL,oz REAL,ow REAL, name text, needle_capcity intefer, alignment_tank_id intefer, alignment_offset_x, alignment_offset_y)",
 		m_plan_name.c_str());
 	sql = temp;
 	m_plan.CreateTable(sql);
@@ -61,12 +61,14 @@ int NavPlan::pushPlan()
 
 	for (auto iter = m_GoalList.begin(); iter != m_GoalList.end(); ++iter) {
 		std::string goalName = m_GoalNameList.find(iter->first)->second;
-		sprintf(temp, "insert into %s(id, goal_id, goal_type, action_id, px, py, oz, ow, name,needle_capcity, alignment_offset) values('%d', '%d', '%d', %d, '%f', '%f', '%f', '%f', '%s','%d', '%d')",
+		sprintf(temp, "insert into %s(id, goal_id, goal_type, action_id, px, py, oz, ow, name,needle_capcity, alignment_tank_id, alignment_offset_x, alignment_offset_y) values('%d', '%d', '%d', %d, '%f', '%f', '%f', '%f', '%s','%d', '%d', '%d', '%d')",
 			m_plan_name.c_str(),
 			iter->first, iter->second.id, iter->second.type.status, iter->second.action_id,
 			iter->second.pose.position.x, iter->second.pose.position.y,
 			iter->second.pose.orientation.z, iter->second.pose.orientation.w,
-			goalName.c_str(), iter->second.needle_capacity, iter->second.alignment_offset);
+			goalName.c_str(), iter->second.needle_capacity, 
+			iter->second.alignment_tank_id, iter->second.alignment_offset_x, iter->second.alignment_offset_y);
+
 		sql = temp;
 		m_plan.Insert(sql);
 	}

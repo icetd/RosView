@@ -139,7 +139,9 @@ int PlanManager::pullPlans()
 						goal.pose.orientation.w = atof(arrValue[i][7].c_str());
 						goalname = arrValue[i][8];
 						goal.needle_capacity = atoi(arrValue[i][9].c_str());
-						goal.alignment_offset = atoi(arrValue[i][10].c_str());
+						goal.alignment_tank_id = atoi(arrValue[i][10].c_str());
+						goal.alignment_offset_x = atoi(arrValue[i][11].c_str());
+						goal.alignment_offset_y = atoi(arrValue[i][12].c_str());
 						iter->second.Addgoal(goal, goalname);
 					}
 				}

@@ -717,10 +717,14 @@ void NodeLayer::MakePlan()
 	ImGui::InputTextWithHint(u8"目标点名称", u8"input plan name here", temp_goal_name, IM_ARRAYSIZE(temp_goal_name));
 
 	static char needle_capacity[128] = {};
-	static char alignment_offset[128] = {};
+	static char alignment_tank_id[128] = {};
+	static char alignment_offset_x[128] = {};
+	static char alignment_offset_y[128] = {};
 
 	ImGui::InputTextWithHint(u8"针管容量", u8"input needle capacity (ml)", needle_capacity, IM_ARRAYSIZE(needle_capacity));
-	ImGui::InputTextWithHint(u8"对准偏移", u8"input alignment offset (mm)", alignment_offset, IM_ARRAYSIZE(alignment_offset));
+	ImGui::InputTextWithHint(u8"取油箱ID", u8"input alignment offset (mm)", alignment_tank_id, IM_ARRAYSIZE(alignment_tank_id));
+	ImGui::InputTextWithHint(u8"对准偏移X", u8"input alignment offset (mm)", alignment_offset_x, IM_ARRAYSIZE(alignment_offset_x));
+	ImGui::InputTextWithHint(u8"对准偏移Y", u8"input alignment offset (mm)", alignment_offset_y, IM_ARRAYSIZE(alignment_offset_y));
 
 	std::string plan_name = temp_name;
 	std::string plan_name_show = temp_show_name;
@@ -738,7 +742,9 @@ void NodeLayer::MakePlan()
 		goal.id = m_make_goal_num;
 		goal.action_id = action_id;
 		goal.needle_capacity = atoi(needle_capacity);
-		goal.alignment_offset = atoi(alignment_offset);
+		goal.alignment_tank_id = atoi(alignment_tank_id);
+		goal.alignment_offset_x = atoi(alignment_offset_x);
+		goal.alignment_offset_y = atoi(alignment_offset_y);
 
 		m_make_plan->Addgoal(goal, goal_name);
 		m_make_goal_num++;
