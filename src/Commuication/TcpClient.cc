@@ -113,9 +113,9 @@ void TcpClient::DisClient()
     int ret = 0;
     ret = closesocket(m_clientSocket);
     if (ret == 0)
-        LOG(INFO, "close socket successed.");
+        LOG(INFO, "close socket succeeded.");
     else 
-        LOG(ERRO, "close socket falied");
+        LOG(ERRO, "close socket failed");
     WSACleanup();
 }
 
