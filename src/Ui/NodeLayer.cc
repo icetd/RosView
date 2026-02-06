@@ -87,8 +87,8 @@ void NodeLayer::Show_Tool_Log(bool* p_open)
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	ImGui::Begin(u8"日志", p_open);
-	ImGui::End();
 	m_Log.Draw(u8"日志", p_open);
+	ImGui::End();
 }
 
 void NodeLayer::Show_Node_Layout(bool* p_open)
@@ -652,39 +652,39 @@ void NodeLayer::MakePlan()
 		if (key < ImGuiKey_NamedKey_BEGIN) {
 			switch (key) {
 			case 81:
-				m_AppNode->move('Q', 0.5, 0.5);
+				m_AppNode->move('Q', 0.1, 0.1);
 				moveInfo = u8"左前";
 				break;
 			case 87:
-				m_AppNode->move('W', 0.5, 0.5);
+				m_AppNode->move('W', 0.1, 0.1);
 				moveInfo = u8"前";
 				break;
 			case 69:
-				m_AppNode->move('E', 0.5, 0.5);
+				m_AppNode->move('E', 0.1, 0.1);
 				moveInfo = u8"右前";
 				break;
 			case 65:
-				m_AppNode->move('A', 0.5, 0.5);
+				m_AppNode->move('A', 0.1, 0.1);
 				moveInfo = u8"左转";
 				break;
 			case 32:
-				m_AppNode->move('S', 0.5, 0.5); // 32 space
+				m_AppNode->move('S', 0.1, 0.1); // 32 space
 				moveInfo = u8"停止";
 				break;
 			case 68:
-				m_AppNode->move('D', 0.5, 0.5);
+				m_AppNode->move('D', 0.1, 0.1);
 				moveInfo = u8"右转";
 				break;
 			case 90:
-				m_AppNode->move('Z', 0.5, 0.5);
+				m_AppNode->move('Z', 0.1, 0.1);
 				moveInfo = u8"左后";
 				break;
 			case 83:
-				m_AppNode->move('X', 0.5, 0.5); // 83 S
+				m_AppNode->move('X', 0.1, 0.1); // 83 S
 				moveInfo = u8"后";
 				break;
 			case 67:
-				m_AppNode->move('C', 0.5, 0.5);
+				m_AppNode->move('C', 0.1, 0.1);
 				moveInfo = u8"右后";
 				break;
 			default:
@@ -896,15 +896,15 @@ void NodeLayer::OnPlanCallback(const std_msgs::String& str)
 	static float oil_value;
 
 
-	int ret = sscanf(m_planBackString.data, "Plan MOVE [%d] successed", &temp);
+	int ret = sscanf(m_planBackString.data, "Plan MOVE [%d] succeeded", &temp);
 	if (ret)
 		m_current_goal = temp - 1;
 
-	ret = sscanf(m_planBackString.data, "Plan TASK [%d] successed", &temp);
+	ret = sscanf(m_planBackString.data, "Plan TASK [%d] succeeded", &temp);
 	if (ret)
 		m_current_goal = temp - 1;
 
-	ret = sscanf(m_planBackString.data, "Plan STOP [%d] successed", &temp);
+	ret = sscanf(m_planBackString.data, "Plan STOP [%d] succeeded", &temp);
 	if (ret)
 		m_current_goal = temp - 1;
 
